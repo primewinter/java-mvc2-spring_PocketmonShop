@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PurchaseMapper">
+ 	
+ 	
+	<resultMap id="purchaseSelectMap" type="purchase">
+	
+		<result property="tranNo" column="tran_no" jdbcType="NUMERIC"/>
+		<result property="orderDate" column="order_date" jdbcType="DATE"/>
+		<result property="tranCode" column="tran_code" jdbcType="CHAR"/>
+		<result property="timeStamp" column="reg_date" jdbcType="TIMESTAMP"/>
+		
+		<association property="payment"  javaType="payment">
+			<id property="tranNo" column="tran_no" jdbcType="NUMERIC"/>
+			<result property="userId" column="buyer_id" jdbcType="VARCHAR"/>
+			<result property="userName" column="buyer_name" jdbcType="VARCHAR"/>
+			<result property="paymentOption" column="payment_option" jdbcType="CHAR"/>
+			<result property="actualAmount" column="actual_amount" jdbcType="NUMERIC"/>
+			<result property="totalAmount" column="total_amount" jdbcType="NUMERIC"/>
+			<result property="pointPay" column="point" jdbcType="NUMERIC"/>
+			<result property="discount" column="discount" jdbcType="NUMERIC"/>
+			<result property="coupon" column="coupon" jdbcType="NUMERIC"/>
+			<result property="orderDate" column="order_Date" jdbcType="DATE"/>
+		</association>
+		
+		<association property="dlvyInfo"  javaType="dlvyInfo">
+			<id property="tranNo" column="tran_no" jdbcType="NUMERIC"/>
+			<result property="userId" column="buyer_id" jdbcType="VARCHAR"/>
+			<result property="receiverName" column="receiver_name" jdbcType="VARCHAR"/>
+			<result property="receiverPhone" column="receiver_phone" jdbcType="CHAR"/>
+			<result property="request" column="receiver_request" jdbcType="NUMERIC"/>
+			<result property="address" column="address" jdbcType="NUMERIC"/>
+			<result property="orderDate" column="reg_date" jdbcType="DATE"/>
+			<result property="statusCode" column="status_code" jdbcType="DATE"/>
+		</association>
+		
+		<association property="buyer" javaType="user">
+			<id property="userId" column="buyer_id" jdbcType="VARCHAR"/>
+			<result property = "userName" column="buyer_name" jdbcType="VARCHAR"/>
+		</association>
+		
+		<collection property="purchaseProd" javaType="java.util.ArrayList" ofType="Product">
+			<id property="prodNo" column="prod_no" jdbcType="NUMERIC"/>
+			<result property="prodName" column="prod_name" jdbcType="VARCHAR"/>
+			<result property="price" column="price" jdbcType="NUMERIC"/>
+			<result property="fileName" column="image_file" jdbcType="VARCHAR"/>
+			<result property="regDate" column="reg_date" jdbcType="DATE"/>
+			<result property="quantity" column="quantity" jdbcType="NUMERIC"/>
+		</collection>
+		
+	</resultMap>
+	
+  	
+	<insert id="addTranInfo" parameterType="purchase">
+		INSERT 
+		INTO tran_info(tran_no, buyer_id, order_date, tran_code)
+		VALUES ( tran_no_seq.NEXTVAL, #{buyer.userId:VARCHAR}, SYSDATE, #{tranCode} )
+	</insert>
+	
+	<insert id="addPayment" parameterType = "purchase">
+	 	INSERT INTO payment
+	 							(tran_no,
+	 							buyer_id, buyer_name,
+	 							payment_option, point, total_amount, actual_amount,
+	 							order_date)
+	 	VALUES (
+								(SELECT * FROM ( SELECT tran_no FROM tran_info ORDER BY tran_no DESC) WHERE ROWNUM=1 ),
+								#{buyer.userId:VARCHAR},#{buyer.userName},
+								#{payment.paymentOption}, #{payment.pointPay}, ${payment.totalAmount}, ${payment.actualAmount},
+								SYSDATE
+						)
+	 </insert>
+	 
+	 <insert id="addTranProd" parameterType="product">
+	 	INSERT INTO transaction_prod
+		 	(tran_no, prod_no, prod_name, price, quantity, order_date)
+	 	VALUES
+		 	(tran_no_seq.CURRVAL, #{prodNo}, #{prodName}, #{price}, #{quantity}, SYSDATE)
+	 </insert>
+	 
+	 <insert id="addUsedPointHistory" parameterType="purchase">
+		INSERT INTO point_history (user_id, tran_no, contents, point, action, total_point, reg_date)
+		VALUES (#{buyer.userId}, tran_no_seq.CURRVAL, '상품 주문', #{payment.pointPay}, '사용',
+							(SELECT point_amount FROM users WHERE user_id='${buyer.userId}')-${payment.pointPay},
+							SYSDATE)
+	 </insert>
+	 
+	 <insert id="addSavedPointHistory" parameterType="purchase">
+		INSERT INTO point_history (user_id, tran_no, contents, point, action, total_point, reg_date)
+		VALUES (#{buyer.userId}, tran_no_seq.CURRVAL, '상품 주문', TRUNC(${payment.actualAmount*0.005}), '적립',
+							(SELECT point_amount FROM users WHERE user_id='${buyer.userId}')+TRUNC(${payment.actualAmount*0.005}),
+							SYSDATE)
+	 </insert>
+	 
+	 <delete id="deletePointHistory" parameterType="purchase">
+	 	DELETE FROM point_history WHERE tran_no = #{tranNo}
+	 </delete>
+	 
+	 
+	 <update id="addStock" parameterType ="product">
+	 	UPDATE product SET stock = (stock + #{quantity} ), best = (best - #{quantity} ) WHERE prod_no = #{prodNo}
+	 </update>
+	 	 
+	 <insert id="addDlvy" parameterType="purchase">
+	 	INSERT INTO delivery_info
+	 	(tran_no, buyer_id,
+	 	receiver_name, receiver_phone, receiver_request,
+	 	address, reg_date, status_code)
+	 	VALUES 
+	 	(tran_no_seq.CURRVAL, #{buyer.userId},
+	 	#{dlvyInfo.receiverName}, #{dlvyInfo.receiverPhone}, #{dlvyInfo.request}, 
+	 	#{dlvyInfo.address}, SYSDATE, 0)
+	 </insert>
+	
+	
+	<update	id="updateStock"	parameterType="product" >
+	   	UPDATE product
+	   	<set>
+	   		stock 				= (stock	-	#{quantity}),
+			best					= (best	+	#{quantity})
+	   	</set>
+	   	WHERE prod_no = #{prodNo}
+	 </update>
+	 
+	 
+	 <update id="updatePoint" parameterType="purchase">
+	 	UPDATE users
+	 	<set>
+	 		purchase_amount		= (purchase_amount		+	${payment.actualAmount}),
+ 			point_amount					= (point_amount	-	${payment.pointPay}	+	TRUNC(${payment.actualAmount*0.005}) )
+	 	</set>
+	 	WHERE user_id = #{buyer.userId}
+	 </update>
+	 
+	 <select id="getTranNo" resultType="int">
+	 	SELECT tran_no_seq.currval FROM dual
+	 </select>
+	 
+	 <update id="updatePointCancel" parameterType="purchase">
+	 	UPDATE users
+	 	<set>
+	 		purchase_amount		= (purchase_amount		-	${payment.actualAmount}),
+ 			point_amount					= (point_amount	+	${payment.pointPay}	 -	TRUNC(${payment.actualAmount*0.005}) )
+	 	</set>
+	 	WHERE user_id = #{buyer.userId}
+	 </update>
+	 
+	
+	<sql id="selectAll">
+		t.tran_no,
+		t.buyer_id,
+		t.tran_code,
+		t.order_date,
+		p.buyer_name,
+		p.payment_option,
+		p.actual_amount,
+		p.point,
+		p.discount,
+		p.coupon,
+		p.total_amount,
+		d.receiver_name,
+		d.receiver_phone,
+		d.receiver_request,
+		d.address,
+		d.status_code,
+		tp.prod_no,
+		tp.prod_name,
+		tp.price,
+		tp.quantity,
+		tp.prod_option
+	</sql>
+	<!-- SQL : SELECT ONE -->
+	<select id="getPurchase" parameterType="int" resultMap="purchaseSelectMap">
+		SELECT 
+		<include refid="selectAll"/>, prod.image_file
+		FROM tran_info t, transaction_prod tp, delivery_info d, payment p, product prod
+		WHERE t.tran_no =d.tran_no AND t.tran_no=p.tran_no AND t.tran_no=tp.tran_no AND tp.prod_no = prod.prod_no
+		AND t.tran_no=#{tranNo}
+	</select> 
+	
+	
+	<sql id="select-purchaseList">
+			SELECT t.tran_no, t.buyer_id, t.order_date, p.total_amount, d.status_code, tp.prod_name, t.tran_code, prod.image_file
+			FROM tran_info t, transaction_prod tp, delivery_info d, payment p, product prod
+			WHERE t.tran_no =d.tran_no 
+							AND t.tran_code <![CDATA[ <> ]]> '주문취소'
+							AND t.tran_code <![CDATA[ <> ]]> '환불완료'
+							AND t.tran_no=p.tran_no 
+							AND t.tran_no=tp.tran_no
+							AND tp.prod_no = prod.prod_no
+			<if test="buyerId !=null" >
+				AND t.buyer_id = #{buyerId}
+			</if>
+			<if test="search.searchCondition != null">
+					<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
+		 				AND tp.prod_name LIKE '%${search.searchKeyword}%'
+					</if>
+					<if test="search.searchCondition == 1 and search.searchKeyword !='' ">
+		 				AND t.buyer_id LIKE '%${search.searchKeyword}%'
+					</if>
+					<if test="search.searchCondition == 2 and search.searchKeyword !='' ">
+		 				AND t.tranNo = '${search.searchKeyword}'
+					</if>
+			</if>
+			<if test="search.sort != null ">
+				<if test= "search.sort == 'lately3days' and search.sort !='' ">
+					AND TO_CHAR(t.order_date) <![CDATA[ > ]]> (SELECT SYSDATE-3 FROM DUAL)
+				</if>
+				<if test= " search.sort == 'lately1week' and search.sort !='' ">
+					AND TO_CHAR(t.order_date) <![CDATA[ > ]]> (SELECT SYSDATE-7 FROM DUAL)
+				</if>
+			</if>
+			<if test="search.sort == null or search.sort == '' ">
+			</if>
+			ORDER BY t.order_date DESC
+	</sql>
+	
+	<sql id="select-saleList">
+			SELECT t.tran_no, t.buyer_id, t.order_date, p.total_amount, d.status_code, tp.prod_name, t.tran_code, prod.image_file
+			FROM tran_info t, transaction_prod tp, delivery_info d, payment p, product prod
+			WHERE t.tran_no =d.tran_no 
+							AND t.tran_no=p.tran_no 
+							AND t.tran_no=tp.tran_no
+							AND tp.prod_no = prod.prod_no
+			<if test="buyerId !=null" >
+				AND t.buyer_id = #{buyerId}
+			</if>
+			<if test="search.searchCondition != null">
+					<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
+		 				AND tp.prod_name LIKE '%${search.searchKeyword}%'
+					</if>
+					<if test="search.searchCondition == 1 and search.searchKeyword !='' ">
+		 				AND t.buyer_id LIKE '%${search.searchKeyword}%'
+					</if>
+					<if test="search.searchCondition == 2 and search.searchKeyword !='' ">
+		 				AND t.tranNo = '${search.searchKeyword}'
+					</if>
+			</if>
+			<if test="search.sort != null ">
+				<if test= "search.sort == 'lately3days' and search.sort !='' ">
+					AND TO_CHAR(t.order_date) <![CDATA[ > ]]> (SELECT SYSDATE-3 FROM DUAL)
+				</if>
+				<if test= " search.sort == 'lately1week' and search.sort !='' ">
+					AND TO_CHAR(t.order_date) <![CDATA[ > ]]> (SELECT SYSDATE-7 FROM DUAL)
+				</if>
+			</if>
+			<if test="search.sort == null or search.sort == '' ">
+			</if>
+			ORDER BY t.order_date DESC
+	</sql>
+	
+	<sql id="select-cancelPurchaseList">
+			SELECT t.tran_no, t.buyer_id, t.order_date, p.total_amount, tp.prod_name, t.tran_code, prod.image_file
+			FROM tran_info t, transaction_prod tp, payment p, product prod
+			WHERE t.tran_code IN ( '주문취소', '환불완료')
+							AND t.tran_no=p.tran_no 
+							AND t.tran_no=tp.tran_no
+							AND tp.prod_no = prod.prod_no
+			<if test="buyerId !=null" >
+				AND t.buyer_id = #{buyerId}
+			</if>
+			<if test="search.searchCondition != null">
+					<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
+		 				AND tp.prod_name LIKE '%${search.searchKeyword}%'
+					</if>
+					<if test="search.searchCondition == 1 and search.searchKeyword !='' ">
+		 				AND t.buyer_id LIKE '%${search.searchKeyword}%'
+					</if>
+					<if test="search.searchCondition == 2 and search.searchKeyword !='' ">
+		 				AND t.tranNo = '${search.searchKeyword}'
+					</if>
+			</if>
+			<if test="search.sort != null ">
+				<if test= "search.sort == 'lately3days' and search.sort !='' ">
+					AND TO_CHAR(t.order_date) <![CDATA[ > ]]> (SELECT SYSDATE-3 FROM DUAL)
+				</if>
+				<if test= " search.sort == 'lately1week' and search.sort !='' ">
+					AND TO_CHAR(t.order_date) <![CDATA[ > ]]> (SELECT SYSDATE-7 FROM DUAL)
+				</if>
+			</if>
+			<if test="search.sort == null or search.sort == '' ">
+			</if>
+			ORDER BY t.order_date DESC
+	</sql>
+	
+	
+	<select  id="getCancelPurchaseList"  parameterType="map"	resultMap="purchaseSelectMap">
+	  		SELECT *
+	  		FROM (SELECT inner_table.* , ROWNUM AS row_seq
+	  					FROM	( <include refid="select-cancelPurchaseList"/> )  inner_table
+						WHERE ROWNUM <![CDATA[ <=]]> #{search.endRowNum} )
+			WHERE row_seq BETWEEN #{search.startRowNum} AND #{search.endRowNum} 
+	</select>
+	
+	<select  id="getPurchaseList"  parameterType="map"	resultMap="purchaseSelectMap">
+	  		SELECT *
+	  		FROM (SELECT inner_table.* , ROWNUM AS row_seq
+	  					FROM	( <include refid="select-purchaseList"/> )  inner_table
+						WHERE ROWNUM <![CDATA[ <=]]> #{search.endRowNum} )
+			WHERE row_seq BETWEEN #{search.startRowNum} AND #{search.endRowNum} 
+	</select>
+	
+	<select  id="getSaleList"  parameterType="map"	resultMap="purchaseSelectMap">
+	  		SELECT *
+	  		FROM (SELECT inner_table.* , ROWNUM AS row_seq
+	  					FROM	( <include refid="select-saleList"/> )  inner_table
+						WHERE ROWNUM <![CDATA[ <=]]> #{search.endRowNum} )
+			WHERE row_seq BETWEEN #{search.startRowNum} AND #{search.endRowNum} 
+	</select>
+	
+
+	<update id="updatePurchase" parameterType ="purchase">
+		UPDATE delivery_info
+		<set>
+			receiver_name = #{dlvyInfo.receiverName},
+			receiver_phone = #{dlvyInfo.receiverPhone},
+			address = #{dlvyInfo.address},
+			receiver_request = #{dlvyInfo.request},
+			reg_date = SYSDATE
+		</set>	
+		WHERE tran_no = #{tranNo}
+	</update>
+	
+	
+	<update id="updateTranCode" parameterType="purchase">
+		UPDATE tran_info
+		<set>
+			tran_code = #{tranCode}
+		</set>
+		WHERE	tran_no = #{tranNo}
+	</update>
+	
+	<update id="updateTranCode2" parameterType="purchase">
+		UPDATE tran_info
+		<set>
+			tran_code = #{tranCode}, 
+			order_date = SYSDATE
+		</set>
+		WHERE	tran_no = #{tranNo}
+	</update>
+	
+	<insert id="insertTranHistory" parameterType="purchase">
+	INSERT INTO tran_history	(tran_no, reg_date, tran_code)
+	VALUES (	tran_no_seq.CURRVAL, SYSDATE, #{tranCode} )
+	</insert>
+	
+	<insert id="insertTranHistory2" parameterType="purchase">
+	INSERT INTO tran_history	(tran_no, reg_date, tran_code)
+	VALUES (	#{tranNo}, SYSDATE, #{tranCode} )
+	</insert>
+	
+	
+	<insert id="addDlvyStatus" parameterType = "purchase">
+		INSERT INTO delivery_info
+		 	(tran_no, buyer_id,
+		 	receiver_name, receiver_phone, receiver_request,
+		 	address, reg_date, status_code)
+	 	VALUES 
+		 	(#{tranNo}, #{buyer.userId},
+		 	#{dlvyInfo.receiverName}, #{dlvyInfo.receiverPhone}, #{dlvyInfo.request}, 
+		 	#{dlvyInfo.address}, SYSDATE, #{dlvyInfo.statusCode})
+	</insert>
+	 
+	 
+	 <select  id="getTotalCount"  parameterType="map"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	
+	  		<include refid="select-purchaseList"/>
+	  	 ) countTable						
+	</select>
+	
+		 <select  id="getTotalCount2"  parameterType="map"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	
+	  		<include refid="select-cancelPurchaseList"/>
+	  	 ) countTable						
+	</select>
+	 
+	<select  id="getTotalCountAll"  parameterType="map"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	
+	  		<include refid="select-saleList"/>
+	  	 ) countTable						
+	</select>
+	 
+	
+</mapper>
