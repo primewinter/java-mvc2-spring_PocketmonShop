@@ -27,6 +27,7 @@
     <style>
         body {
             padding-top: 100px;
+             font-family:  'Noto Sans KR', sans-serif;
         }
 
         .wrapper {
@@ -137,6 +138,7 @@ $(function() {
 						  ${purchase.purchaseProd[0].prodName}  <c:if test="${purchase.purchaseProd.size()>1}">외 ${purchase.purchaseProd.size()-1} 건</c:if></span>
 						  <br/><br/>
 						  <h5 style="color:red;">${ purchase.tranCode=='주문취소' || purchase.tranCode=='환불완료' || purchase.tranCode=='환불 신청' || purchase.tranCode=='처리중' ? purchase.tranCode  : '' }</h5>
+						  <h5 style="color:black;">${ purchase.tranCode=='주문취소' || purchase.tranCode.trim() =='환불완료' || purchase.tranCode=='환불 신청' || purchase.tranCode=='처리중' ? ''  : purchase.tranCode }</h5>
 						  ${purchase.payment.paymentOption}
 						  </div>
 						  <div class="col-md-6"><span class="align-right"> &#8361; ${purchase.payment.actualAmount}</span></div>

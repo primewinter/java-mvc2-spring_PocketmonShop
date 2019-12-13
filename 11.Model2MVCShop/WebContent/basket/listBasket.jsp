@@ -196,26 +196,26 @@ $(function() {
 		<c:set var="i" value="0" />
 		<c:forEach var="basket" items="${list}">
 		<c:set var="i" value="${ i+1 }" />
-				 <div class="row basket" style="padding:0.5em">	
-							<div class="col-md-1" style="text-align:left;">
+				 <div class="row basket" style="padding:0.5em;">	
+							<div class="col-md-1" style="text-align:left;vertical-align:middle;">
 										<input type="checkbox" name="chkBasketNo" value="${basket.basketNo}">
 							</div>
-							<div class="col-md-2" style="text-align:center;">
+							<div class="col-md-2" style="text-align:center;vertical-align:middle;">
 										<img src="../images/uploadFiles/${basket.product.fileNameArr[0]}" width ="auto" height="150"><br/>
 							</div>
-							<div class="col-md-2" style="text-align:left;">
+							<div class="col-md-2" style="text-align:center;vertical-align:middle;">
 										<h4>${basket.product.prodName}</h4>
 							</div>
-							<div class="col-md-1" style="text-align:center;">
+							<div class="col-md-1" style="text-align:center;vertical-align:middle;">
 										${basket.product.price}원
 							</div>
-							<div class="col-md-1" style="text-align:center;">
+							<div class="col-md-1" style="text-align:center;vertical-align:middle;">
 										${basket.quantity}개
 							</div>
-							<div class="col-md-2" style="text-align:center;">
+							<div class="col-md-2" style="text-align:center;vertical-align:middle;">
 										&#8361; ${basket.product.price*basket.quantity}
 							</div>
-							<div class="col-md-3" style="text-align:center;">
+							<div class="col-md-3" style="text-align:center;vertical-align:middle;">
 										<p><input type="button" name="buy" value="주문" style="background-color:white;font-size:9pt">
 										<input type="button" name="delete" value="삭제" style="background-color:white;font-size:9pt"></p>
 							</div>			

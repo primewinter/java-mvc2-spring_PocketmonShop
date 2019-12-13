@@ -203,7 +203,7 @@
 		 				AND t.buyer_id LIKE '%${search.searchKeyword}%'
 					</if>
 					<if test="search.searchCondition == 2 and search.searchKeyword !='' ">
-		 				AND t.tranNo = '${search.searchKeyword}'
+		 				AND t.tran_no = '${search.searchKeyword}'
 					</if>
 			</if>
 			<if test="search.sort != null ">
@@ -237,7 +237,7 @@
 		 				AND t.buyer_id LIKE '%${search.searchKeyword}%'
 					</if>
 					<if test="search.searchCondition == 2 and search.searchKeyword !='' ">
-		 				AND t.tranNo = '${search.searchKeyword}'
+		 				AND t.tran_no = '${search.searchKeyword}'
 					</if>
 			</if>
 			<if test="search.sort != null ">
@@ -271,7 +271,7 @@
 		 				AND t.buyer_id LIKE '%${search.searchKeyword}%'
 					</if>
 					<if test="search.searchCondition == 2 and search.searchKeyword !='' ">
-		 				AND t.tranNo = '${search.searchKeyword}'
+		 				AND t.tran_No = '${search.searchKeyword}'
 					</if>
 			</if>
 			<if test="search.sort != null ">

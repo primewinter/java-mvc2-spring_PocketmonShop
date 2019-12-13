@@ -55,12 +55,12 @@ $(function() {
 		fncGetList(1);
 	});
 	
-	$( ".ct_list_pop td:nth-child(5)" ).on("click" , function() {
+	$( ".ct_list_pop td:nth-child(3)" ).on("click" , function() {
 		var tranNo = $($(this).siblings()).html();
 		self.location = "/purchase/getSale?tranNo="+tranNo.trim();
 	});
 	
-	$(".ct_list_pop td:nth-child(3)").on("click", function() {
+	$(".ct_list_pop td:nth-child(2)").on("click", function() {
 		alert("곧 구현할 거야 기다려");
 		/* ajax로 userId 가 주문한 거래내역 보여주기 */
 	 }).on("mouseover", function() {
@@ -69,7 +69,7 @@ $(function() {
 			$(this).css({'font-weight':'normal','color':"#424242"});
 		});
 	
-	$(".ct_list_pop td:nth-child(5)").on("mouseover", function() {
+	$(".ct_list_pop td:nth-child(3)").on("mouseover", function() {
 		$(this).css({'font-weight':'bold', 'color':'#4E1EB4'});
 	}).on("mouseout", function() {
 		$(this).css({'font-weight':'normal','color':"#424242"});

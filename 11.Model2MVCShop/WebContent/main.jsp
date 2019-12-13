@@ -31,6 +31,7 @@
 	<style>
         body {
             padding-top : 100px;
+             font-family:  'Noto Sans KR', sans-serif;
         }
 		.jumbotron {
 			background-color: powderblue;
@@ -65,6 +66,8 @@ $(document).ready(function() {
 	fetchList();
 });
 
+var ranking = 1;
+
 function fetchList(){
     
     $.ajax({
@@ -98,22 +101,18 @@ function renderList(mode,vo){
    console.log("renderList 들어왔다");
     
     var html = ""
-    	+"<figure style=\"column-break-inside: avoid;width:100%;text-align:center;\">"
-    			+"<input type=\"hidden\" name=\"prodNo\" value='"+vo.prodNo+"'>"
-       					+ ""
+    	+"<div style=\"column-break-inside: avoid;width:100%;text-align:center;\">"
     
        
-    html +=					 "<input type=\"hidden\" name=\"prodNo\" value=\""+vo.prodNo+"\"><a href=\"/product/getProduct?prodNo="+vo.prodNo+"\" style=\"text-decoration: none;color:#333;\">"
-    								+"<img src=\"../images/uploadFiles/"+vo.fileNameArr[0]+"\" style=\"width: 20%; height: auto;border-bottom: 1px solid #ccc;padding-bottom: 15px;margin-bottom: 5px;\">"
+    html +=					 "<h4>"+ranking+"위 "+vo.prodName+"</h4>"
+    								+vo.prodDetail+"<br/><a href=\"/product/getProduct?prodNo="+vo.prodNo+"\" style=\"text-decoration: none;color:#333;\">"
+    								+"<img src=\"../images/uploadFiles/"+vo.fileNameArr[0]+"\" style=\"width: 20%; height: auto;padding-bottom: 15px;margin-bottom: 5px;\">"
 
     		
-    html	+="<figcaption style=\"text-align:center;\">"
-				+"<p align=\"left\"><h4>"+vo.prodName+"</h4>"
-				+  vo.prodDetail +"<br/><br/>"
-				+"</figcaption>"
-		+"</figure>"
-		+""
-    
+    html	+="<br/><br/>"
+				+"</div>"
+    ranking++;
+				
     if( mode ) {
     	console.log("prepend ::: \n"+html+"\n\n")
         $(".jumbotron").prepend(html);

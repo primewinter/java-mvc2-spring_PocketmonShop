@@ -27,6 +27,7 @@
     <style>
         body {
             padding-top: 100px;
+             font-family:  'Noto Sans KR', sans-serif;
         }
 
         .wrapper {
@@ -80,11 +81,11 @@
 <script type="text/javascript">
 
 $(function() {
-	 $( "td.ct_btn01:contains('확인')" ).on("click" , function() {
+	 $( "p:contains('확인')" ).on("click" , function() {
 			history.go(-1);
 		 });
 	 
-	 $( "td.ct_btn01:contains('수정')" ).on("click" , function() {
+	 $( "p:contains('수정')" ).on("click" , function() {
 		 
 		var url = "/purchase/updatePurchase?tranNo="+'${purchase.tranNo}';
 		$("form").attr("method" , "GET").attr("action" , url).submit();

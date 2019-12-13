@@ -27,6 +27,7 @@
     <style>
         body {
             padding-top: 100px;
+             font-family:  'Noto Sans KR', sans-serif;
         }
 
         .wrapper {
@@ -84,8 +85,6 @@
         .table_menu{
         	width: 120px;
         	height: 30px;
-        }
-        .row {
         }
 
     </style>

@@ -39,35 +39,27 @@
 	<style>
          .wrapper {
             display: grid;
-            grid-template-columns: repeat(5, 150px);
-            grid-gap: 50px;
+            grid-template-columns: repeat(5, 250px);
+            grid-gap: 10px;
             grid-auto-rows: minmax(100px, auto);
-            margin: 30px;
+            margin: 20px;
         }
 
         .one {
-            grid-column: 1 / 5;
+            grid-column: 2 / 4;
             grid-row: 1;
             text-align:center;
         }
 
         .two {
-            grid-column: 1 / 5;
-            grid-row: 2 / 4;
+            grid-column: 2 / 4;
+            grid-row: 2 ;
             background-color: powderblue;
         }
         
-        .btn_buy { 
-        	border: 1px solid #333; 
-        	background-color: #333; 
-        	width: 250px;
-        	color: white; 
-        	padding: 5px; 
-        }
-
 
 		body {
-            padding-top : 100px;
+            padding-top : 90px;
             font-family:  'Noto Sans KR', sans-serif;
         }
      </style>
@@ -82,7 +74,7 @@
 <div class="container">
     <div class="wrapper">
         <div class="one">
-        		<img src="/images/uploadFiles/obaksaMini.png"> <input type="text" name="libSearch" id="libSearch" placeholder="포켓몬을 검색해보렴" style="width:200px;">  <input type="button" class="btn btn-default" id="libSubmit" value="검색"/>
+        		<img src="/images/uploadFiles/obaksaMini.png" id="reset"> <input type="text" name="libSearch" id="libSearch" placeholder="포켓몬을 검색해보렴" style="width:200px;">  <input type="button" class="btn btn-default" id="libSubmit" value="검색"/>
      	</div>
         <div class="two">
         		<h4>오늘의 포켓몬은 뭘까요?</h4>
@@ -92,6 +84,10 @@
     </div>
 </div>
 	<script type="text/javascript">
+	
+		$("#reset").on("click", function() {
+			self.location = "/product/crawling.jsp";
+		});
 
 		 
 		 $(function() {
@@ -172,7 +168,7 @@
 	                console.log("내용 result : "+result);
 	                if( result.length == 0 ) {
 	                	 var html =	"<h4>그런 포켓몬은 없다는구나</h4>";
-					        html += 		"<img src=\"/images/uploadFiles/obaksa3.jpg\"><br/>";
+					        html += 		"<img src=\"/images/uploadFiles/obaksa3.jpg\" width=\"80%\"><br/>";
 					        html +=		"<h3>다른 포켓몬을 검색해볼까?</h3>"
 	                } else {
 	                	var html = result;
