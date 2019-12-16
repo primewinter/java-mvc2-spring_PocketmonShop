@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BasketMapper">
+ 	
+ 	
+	<resultMap id="basketSelectMap" type="basket">
+	
+		<result property="basketNo" column="basket_no" jdbcType="NUMERIC"/>
+		<result property="visitor.userId" 		column="user_id"		jdbcType="VARCHAR"/>
+		<result property="regDate" column="reg_date" jdbcType="DATE"/>
+		<result property="quantity" column="quantity" jdbcType="INTEGER"/>
+		<result property="flag" column="flag" jdbcType="INTEGER"/>
+		
+		<association property="product"  javaType="product">
+			<id property="prodNo" column="prod_no" jdbcType="INTEGER"/>
+			<result property="prodName" column="prod_name" jdbcType="VARCHAR"/>
+			<result property="price" column="price" jdbcType="NUMERIC"/>
+			<result property="fileName" column="image_file" jdbcType="VARCHAR"/>
+			<result property="prodDetail" 			column="prod_detail" 				jdbcType="VARCHAR" />
+			<result property="manuDate" 			column="manufacture_day" 	jdbcType="VARCHAR" />
+		</association>
+		
+	</resultMap>
+	
+	<!-- 
+	<select id="getPurchase" parameterType="int" resultMap="purchaseSelectMap">
+  		SELECT 
+		prod_no, buyer_id, payment_option, receiver_name, receiver_phone, demailaddr, dlvy_request, dlvy_date, order_data, tran_status_code, tran_no, amount
+		FROM transaction
+		WHERE tran_no = #{tranNo}
+  	</select>
+  	 -->
+  	
+	<insert id="addBasket" parameterType="basket">
+		INSERT INTO basket (basket_no, user_id, prod_no, quantity, reg_date)
+		VALUES (basket_no.NEXTVAL, #{visitor.userId}, #{product.prodNo}, #{quantity}, SYSDATE)
+	</insert>
+	
+	
+	<sql id="select-basketList">
+		SELECT  b.basket_no, b.user_id, b.prod_no, b.quantity, p.prod_name, p.prod_detail, p.price, p.image_file
+		FROM product p, basket b
+		WHERE p.prod_no = b.prod_no
+		AND b.user_Id IN
+		<foreach collection="visitors" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		<if test="search.searchCondition != null">
+				<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
+	 				AND p.prod_name LIKE '%${search.searchKeyword}%'
+				</if>
+				<if test="search.searchCondition == 3 and search.searchKeyword !='' ">
+	 				AND t.tran_code LIKE '%${search.searchKeyword}%'
+				</if>
+		</if>
+		ORDER BY b.reg_date DESC
+	</sql>
+	
+	<select id="getProdNo" parameterType="integer" resultMap="basketSelectMap">
+		SELECT b.basket_no, b.prod_no, b.quantity, p.prod_name, p.prod_detail, p.image_file, p.price, p.reg_date, p.stock, p.manufacture_day
+		FROM basket b, product p
+		WHERE b.prod_no = p.prod_no AND b.basket_no = #{basketNo}
+	</select>
+	
+	<select id ="checkDpl" parameterType = "basket" resultType="int">
+		SELECT count(*)
+		FROM basket
+		WHERE prod_no = #{product.prodNo} AND user_id=#{visitor.userId}
+	</select>
+	
+	<update id ="updateBasket" parameterType = "basket">
+		UPDATE basket
+		SET quantity = (quantity + #{quantity} )
+		WHERE user_id = #{visitor.userId} AND prod_no=#{product.prodNo}
+	</update>
+	
+	
+	<select  id="getBasketList"  parameterType="map"	resultMap="basketSelectMap">
+  		SELECT * FROM
+  						(	SELECT inner_table.* , ROWNUM AS row_seq
+  							FROM		(	<include refid="select-basketList"/> 	) inner_table
+							WHERE ROWNUM <![CDATA[ <=]]> #{search.endRowNum}	)
+		WHERE row_seq BETWEEN #{search.startRowNum} AND #{search.endRowNum} 
+	</select>
+	
+	<delete id = "deleteBasket">
+		DELETE FROM basket
+		WHERE basket_no IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">#{item}</foreach>
+	</delete>
+	
+	 
+	 <select  id="getTotalCount"  parameterType="map"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	
+	  		<include refid="select-basketList"/>
+	  	 ) countTable						
+	</select>
+	 
+	 
+	
+</mapper>
