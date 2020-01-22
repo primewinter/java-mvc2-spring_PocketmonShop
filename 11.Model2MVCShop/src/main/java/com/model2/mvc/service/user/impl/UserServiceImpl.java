@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	public User getUser(String userId) throws Exception {
+		System.out.println("UserService : getUser ["+userId+"]");
 		return userDao.getUser(userId);
 	}
 

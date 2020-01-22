@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
+import com.model2.mvc.common.util.TaskTestService;
 import com.model2.mvc.service.domain.User;
 import com.model2.mvc.service.user.UserService;
 
@@ -106,7 +107,7 @@ public class UserController {
 	public String login() throws Exception{
 		
 		System.out.println("/user/logon : GET");
-
+		
 		return "redirect:/user/loginView.jsp";
 	}
 	
@@ -119,6 +120,8 @@ public class UserController {
 		
 		if( user.getPassword().equals(dbUser.getPassword())){
 			session.setAttribute("user", dbUser);
+			//TaskTestService.TestScheduler();
+			System.out.println("login :startScheduler()");
 		}
 		
 		return "redirect:/index.jsp";
@@ -129,7 +132,8 @@ public class UserController {
 	public String logout(HttpSession session ) throws Exception{
 		
 		System.out.println("/user/logout : POST");
-		
+		User dbUser = (User)session.getAttribute("user");
+		//TaskTestService.stopScheduler(dbUser);
 		session.invalidate();
 		
 		return "redirect:/index.jsp";

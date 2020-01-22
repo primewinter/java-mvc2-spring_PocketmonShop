@@ -120,7 +120,11 @@
 				    <textarea id="messageTextArea" rows="10" cols="30"></textarea><br>
 				     <!-- 송신 메시지 작성하는 창 -->
 			        <input id="textMessage" type="text">
-
+			        <!-- 송신 버튼 -->
+			        <input onclick="sendMessage()" value="Send" type="button">
+			
+			        <!-- 종료 버튼 -->
+			        <input onclick="disconnect()" value="Disconnect" type="button">
 				    <br />
 				    <script type="text/javascript">
 				        //WebSocketEx는 프로젝트 이름
@@ -164,7 +168,7 @@
 				        }
 				    </script>
  		</div>
- 		<h4>알림 내역</h4>
+ 		<h4>채팅</h4>
  	</div>
    	
    	
@@ -286,7 +290,6 @@
         }
         
         .footerBar-content {
-        	background-color: lightpink;
         }
         
 

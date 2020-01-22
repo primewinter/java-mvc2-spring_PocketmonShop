@@ -22,6 +22,9 @@
 		<typeAlias alias="basket" type="com.model2.mvc.service.domain.Basket" />
 		<typeAlias alias="pointHistory" type="com.model2.mvc.service.domain.PointHistory" />
 		<typeAlias alias="search" type="com.model2.mvc.common.Search" />
+		<typeAlias alias="board" type="com.model2.mvc.service.domain.Board" />
+		<typeAlias alias="cmt" type="com.model2.mvc.service.domain.Cmt" />
+		<typeAlias alias="cmt" type="com.model2.mvc.service.domain.Push" />
 	</typeAliases>
 	
 	 <!-- SQL Definition :: file include -->
@@ -30,6 +33,8 @@
 		<mapper resource="sql/ProductMapper.xml"/>
 		<mapper resource="sql/PurchaseMapper.xml"/>
 		<mapper resource="sql/BasketMapper.xml"/>
+		<mapper resource="sql/BoardMapper.xml"/>
+		<mapper resource="sql/PushMapper.xml"/>
 	</mappers>
 
 </configuration>
