@@ -1,6 +1,7 @@
 package com.model2.mvc.service.push.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,29 +21,42 @@ public class PushDaoImpl implements PushDao {
 		this.sqlSession = sqlSession;
 	}
 	
+	public PushDaoImpl() {
+		System.out.println(this.getClass());
+	}
+
 	@Override
 	public void addPush(Push push) throws Exception {
-		// TODO Auto-generated method stub
+		if(sqlSession.selectOne("PushMapper.getPushId", push) == null) {
+			System.out.println("\t\t\tinsert «“ push¿« pushType :"+push);
+			sqlSession.insert("PushMapper.addPush", push);
+		} else {
+			sqlSession.update("PushMapper.updateCmtCount", push);
+		}
+
 	}
 	@Override
-	public List<Push> getPushList(String userId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Push> getPushList(Map<String, Object> map) throws Exception {
+		return sqlSession.selectList("PushMapper.getPushList", map);
 	}
 	@Override
-	public void readPush(int pushId) throws Exception {
-		// TODO Auto-generated method stub
+	public void readPush(String userId) throws Exception {
+		sqlSession.update("PushMapper.readPush", userId);
 		
 	}
 	@Override
-	public void deletePush(int pushId) throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void deletePush(List<String> pushId) throws Exception {
+		sqlSession.update("PushMapper.deletePush", pushId);
 	}
 	@Override
 	public int getUnreadCount(String userId) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return sqlSession.selectOne("PushMapper.getUnreadCount", userId);
 	}
+	
+	@Override
+	public int getTotalCount(Map<String, Object> map) throws Exception {
+		return sqlSession.selectOne("PushMapper.getTotalCount", map);
+	}
+	
 	
 }

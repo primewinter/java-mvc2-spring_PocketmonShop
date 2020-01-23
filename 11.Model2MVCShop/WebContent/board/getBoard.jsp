@@ -115,17 +115,16 @@ $(function() {
 			data : JSON.stringify({
 				cmt
 			}) ,
-			dataType : "json",
 			headers : {
 				"Accept" : "application/json",
 				"Content-Type" : "application/json"
 			},
-			success : function(result) {
-				console.log(result);
+			success : function() {
+				console.log("성공");
 				//var reply = result.userId+" : "+result.content;
 				//$(".three .reply").html(reply);
 				getCmtList(boardNo);
-				$("#content").html("");
+				$("#content").val('');
 				
 				
 				//글 작성자에게 push 하기
@@ -148,7 +147,7 @@ $(function() {
 		$.ajax({
 			url: "/board/json/getCmtList/"+boardNo,
 			type: "GET",
-			heades: {
+			headers: {
 				"Accept" : "application/json",
 				"Content-Type" : "application/json"
 			},

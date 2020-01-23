@@ -17,7 +17,7 @@
 		
 	</resultMap>
 	
-		<resultMap id="cmtSelectMap" type="cmt">
+	<resultMap id="cmtSelectMap" type="cmt">
 	
 		<result property="cmtNo" column="cmt_no" jdbcType="NUMERIC"/>
 		<result property="userId" 		column="user_id"		jdbcType="VARCHAR"/>

@@ -24,17 +24,22 @@ import com.model2.mvc.common.Search;
 import com.model2.mvc.service.board.BoardService;
 import com.model2.mvc.service.domain.Board;
 import com.model2.mvc.service.domain.Cmt;
+import com.model2.mvc.service.domain.Push;
 import com.model2.mvc.service.domain.User;
+import com.model2.mvc.service.push.PushService;
 
 
 @Controller
 @ResponseBody
-@RequestMapping("/board/json/*")
+@RequestMapping("/board/*")
 public class BoardRestController {
 	
 	@Autowired
 	@Qualifier("boardServiceImpl")
 	private BoardService boardService;
+	@Autowired
+	@Qualifier("pushServiceImpl")
+	private PushService pushService;
 		
 	public BoardRestController(){
 		System.out.println(this.getClass());
@@ -51,15 +56,21 @@ public class BoardRestController {
 	int pageSize;
 	
 	
-	@RequestMapping( value="addCmt" )
-	public List<Cmt> addBoard( @RequestBody Map<String, Object> jsonMap) throws Exception {
+	@RequestMapping( value="json/addCmt" )
+	public void addBoard( @RequestBody Map<String, Object> jsonMap) throws Exception {
 	//public Cmt addBoard( @RequestParam(value="boardNo") int boardNo, @RequestParam(value="content") String content, @RequestParam(value="userId") String userId) throws Exception {
 
-		System.out.println("/addCmt.do");
+		System.out.println("json/addCmt.do");
 		ObjectMapper objectmapper = new ObjectMapper();
 		Cmt cmt = objectmapper.convertValue(jsonMap.get("cmt"), Cmt.class);
 		System.out.println("cmt :: "+cmt);
-		//Business Logic
+		
+		Push push = new Push();
+		push.setRefId(cmt.getBoardNo()+"");
+		push.setPushType("R");
+		Board board = boardService.getBoard(cmt.getBoardNo());
+		push.setReceiverId(board.getUserId());
+		
 		/*
 		 * System.out.println("boardNo :: "+boardNo);
 		 * System.out.println("content :: "+content);
@@ -69,12 +80,10 @@ public class BoardRestController {
 		 * cmt.setUserId(userId);
 		 */
 		boardService.addCmt(cmt);
-		List<Cmt> cmtList = boardService.getCmtList(cmt.getBoardNo());
-		
-		return cmtList;
+		pushService.addPush(push);
 	}
 	
-	@RequestMapping( value="getBoard" )
+	@RequestMapping( value="json/getBoard" )
 	public String getBoard( @RequestParam("boardNo") int boardNo,  Model model) throws Exception {
 
 		System.out.println("/getBoard.do");
@@ -84,7 +93,7 @@ public class BoardRestController {
 		return "forward:/board/getBoard.jsp";
 	}
 	
-	@RequestMapping( value="getCmtList/{boardNo}" )
+	@RequestMapping( value="json/getCmtList/{boardNo}" )
 	public List<Cmt> getCmtList( @PathVariable("boardNo") int boardNo,  Model model) throws Exception {
 
 		System.out.println("/getCmtList.do");
@@ -94,7 +103,7 @@ public class BoardRestController {
 		return cmt;
 	}
 	
-	@RequestMapping( value="deleteCmt/{cmtNo}" )
+	@RequestMapping( value="json/deleteCmt/{cmtNo}" )
 	public void deleteCmt( @PathVariable("cmtNo") int cmtNo,  Model model) throws Exception {
 
 		System.out.println("/deleteCmt.do");
@@ -104,7 +113,7 @@ public class BoardRestController {
 	}
 	
 	
-	@RequestMapping(value="listBoard")
+	@RequestMapping(value="json/listBoard")
 	public String listBasket( @ModelAttribute("search") Search search , Model model , HttpSession session, HttpServletRequest request) throws Exception{
 		System.out.println("µð¹ö±ë!!! : "+search.getCurrentPage());
 		System.out.println("/listBoard.do");

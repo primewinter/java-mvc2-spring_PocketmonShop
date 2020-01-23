@@ -24,7 +24,7 @@
 		<typeAlias alias="search" type="com.model2.mvc.common.Search" />
 		<typeAlias alias="board" type="com.model2.mvc.service.domain.Board" />
 		<typeAlias alias="cmt" type="com.model2.mvc.service.domain.Cmt" />
-		<typeAlias alias="cmt" type="com.model2.mvc.service.domain.Push" />
+		<typeAlias alias="push" type="com.model2.mvc.service.domain.Push" />
 	</typeAliases>
 	
 	 <!-- SQL Definition :: file include -->

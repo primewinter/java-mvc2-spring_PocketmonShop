@@ -118,12 +118,9 @@
  			 
 				    <!-- 결과 메시지 보여주는 창 -->
 				    <textarea id="messageTextArea" rows="10" cols="30"></textarea><br>
-				     <!-- 송신 메시지 작성하는 창 -->
-			        <input id="textMessage" type="text">
-
 				    <br />
+				    
 				    <script type="text/javascript">
-				        //WebSocketEx는 프로젝트 이름
 				        //websocket 클래스 이름
 				        var chatAddr = "ws://192.168.0.82:8080/websocket/${user.userId}";
 				        var webSocket = new WebSocket(chatAddr);
@@ -135,6 +132,8 @@
 					        webSocket.onmessage = function(message){
 					            messageTextArea.value += "\n"+message.data;
 				        	  $("#messageTextArea").scrollTop($("#messageTextArea")[0].scrollHeight);
+				        	  getPushList(userId);
+				        	  getUnreadCount(userId);
 					        };
 				            
 				        };
@@ -147,17 +146,6 @@
 				            messageTextArea.value += "에러가 발생했습니다.\n";
 				        };
 				        
-				        //Send 버튼을 누르면 실행되는 함수
-				        function sendMessage(){
-				        	var user = "${user.userId} : ";
-				            var message = document.getElementById("textMessage");
-				            //messageTextArea.value += "Send to Server => "+message.value+"\n";
-				            //웹소켓으로 textMessage객체의 값을 보낸다.
-				            webSocket.send(user+message.value);
-				            $("#messageTextArea").scrollTop($("#messageTextArea")[0].scrollHeight);
-				            //textMessage객체의 값 초기화
-				            message.value = "";
-				        }
 				        //웹소켓 종료
 				        function disconnect(){
 				            webSocket.close();
@@ -169,7 +157,7 @@
    	
    	
    	<script type="text/javascript">
-	
+    var userId = '${user.userId}';
 		//============= logout Event  처리 =============	
 		$("button[type='submit']").on("click", function() {
 		        $("#currentPage").val(1);
@@ -245,14 +233,88 @@
 		 	
 	 });
 		 
+		 function getPushList(userId) {
+			 $.ajax({
+				 url : "push/json/getPushList/"+userId,
+				 type : "GET",
+				 dataType : "json",
+				 headers : {
+					 "Accept" : "application/json",
+					 "Content-Type" : "application/json"
+				 },
+				 success : function(result) {
+					 console.log(result);
+					 var list = result.list;
+					 var resultPage = result.resultPage;
+					 var search = result.search;
+					 console.log("list.size : "+list.size);
+					 for(var i = 0 in list) {
+					 	console.log(list[i].pushMsg+"\n");
+					 	console.log(list[i].title);
+					 }
+					 console.log("resultPage : "+resultPage);
+					 console.log("search : "+search);
+				 },
+				 error : function(error) {
+					 console.log("알림 내역 출력 실패");
+					 console.log(error);
+				 }
+			 })
+		 }
+		 
+		 function getUnreadCount(userId) {
+			 $.ajax({
+				 url : "push/json/getUnreadCount/"+userId,
+				 type : "GET",
+				 dataType : "json",
+				 headers : {
+					 "Accept" : "application/json",
+					 "Content-Type" : "application/json"
+				 },
+				 success : function(result) {
+					 console.log("안 읽은 알림 개수 출력 성공 : "+result+"개")
+					 var h = "<h4>알림 내역<font color='red'>"+result+"</font></h4>";
+					 $(".footerBar h4").html(h);
+				 },
+				 error : function(error) {
+					 console.log("안 읽은 알림 개수 출력 실패");
+					 console.log(error);
+				 }
+			 })
+		 }
+		 
+		 function readPush(userId) {
+			 $.ajax({
+				 url : "push/json/readPush/"+userId,
+				 type : "GET",
+				 headers : {
+					 "Accept" : "application/json",
+					 "Content-Type" : "application/json"
+				 },
+				 success : function() {
+					 console.log("알림 읽기 성공")
+				 },
+				 error : function(error) {
+					 console.log("알림 읽기 실패");
+					 console.log(error);
+				 }
+			 })
+		 }
+		 
 		  jQuery(document).ready(function($) {
-
+				
+			  getPushList(userId);
+			  getUnreadCount(userId);
+			  
 	            // hide the menu when the page load
 	            $(".footerBar-content").hide();
 
 	            // when .menuBtn is clicked, do this
-	            $("h4").click(function() {
+	            $(".footerBar").click(function() {
 
+	            	readPush(userId);
+					setTimeout(() => getUnreadCount(userId), 100);
+					
 	                // open the menu with slide effect
 	                $(".footerBar-content").slideToggle(300);
 
