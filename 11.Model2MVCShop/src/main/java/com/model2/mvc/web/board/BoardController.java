@@ -75,7 +75,8 @@ public class BoardController {
 		}
 		search.setPageSize(pageSize);
 		System.out.println("[pageSize] : "+pageSize);
-		
+		System.out.println("Search :: "+search);
+		System.out.println("search.searchCondition :: "+search.getSearchCondition()+"\n\n\n");
 		Map<String , Object> map=boardService.getBoardList(search);
 		System.out.println("[currentPage] : "+search.getCurrentPage());
 		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);

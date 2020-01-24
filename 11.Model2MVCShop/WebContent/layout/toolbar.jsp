@@ -117,33 +117,31 @@
  		<div class="footerBar-content">
  			 
 				    <!-- 결과 메시지 보여주는 창 -->
-				    <textarea id="messageTextArea" rows="10" cols="30"></textarea><br>
+				    <div class="pushList" style="overflow-x:hidden; width:200px; height:300px;">
+				    </div>
 				    <br />
 				    
 				    <script type="text/javascript">
 				        //websocket 클래스 이름
 				        var chatAddr = "ws://192.168.0.82:8080/websocket/${user.userId}";
 				        var webSocket = new WebSocket(chatAddr);
-				        var messageTextArea = document.getElementById("messageTextArea");
 				        //웹 소켓이 연결되었을 때 호출되는 이벤트
 				        webSocket.onopen = function(message){
-				            console.log('Info : connection opened.')
-				          //웹 소켓에서 메시지가 날라왔을 때 호출되는 이벤트
-					        webSocket.onmessage = function(message){
-					            messageTextArea.value += "\n"+message.data;
-				        	  $("#messageTextArea").scrollTop($("#messageTextArea")[0].scrollHeight);
-				        	  getPushList(userId);
-				        	  getUnreadCount(userId);
+				              console.log('Info : connection opened.')
+				          	  //웹 소켓에서 메시지가 날라왔을 때 호출되는 이벤트
+					          webSocket.onmessage = function(message){
+					        	  getPushList(userId);
+					        	  getUnreadCount(userId);
 					        };
 				            
 				        };
 				        //웹 소켓이 닫혔을 때 호출되는 이벤트
 				        webSocket.onclose = function(message){
-				            messageTextArea.value += "접속이 끊어졌습니다.\n";
+				            console.log("접속이 끊어졌습니다.\n");
 				        };
 				        //웹 소켓이 에러가 났을 때 호출되는 이벤트
 				        webSocket.onerror = function(message){
-				            messageTextArea.value += "에러가 발생했습니다.\n";
+				            console.log("에러가 발생했습니다.\n");
 				        };
 				        
 				        //웹소켓 종료
@@ -248,10 +246,18 @@
 					 var resultPage = result.resultPage;
 					 var search = result.search;
 					 console.log("list.size : "+list.size);
+					 var tag = "<div class='chkPushList'>"
+					 tag += "<a href='javascript:deletePush()'>삭제</a><hr>";
 					 for(var i = 0 in list) {
-					 	console.log(list[i].pushMsg+"\n");
-					 	console.log(list[i].title);
+					 	tag += "<input type='checkbox' name='chk' id='"+list[i].pushId+"' value='"+list[i].pushId+"'>";
+					 	tag+= "<a href='/board/getBoard?boardNo="+list[i].refId+"'>";
+					 	tag += list[i].pushMsg+"</a><br>";
 					 }
+					 
+					 tag += "<br>"
+					 tag += "</div>"
+					 
+					 $('.pushList').html(tag);
 					 console.log("resultPage : "+resultPage);
 					 console.log("search : "+search);
 				 },
@@ -301,6 +307,40 @@
 			 })
 		 }
 		 
+		 function deletePush() {
+			 console.log("삭제 시작")
+			 
+			// 배열 선언
+			 var arrayParam = new Array();
+			 //each로 loop를 돌면서 checkbox의 check된 값을 가져와 담아준다.
+			 $("input:checkbox[name='chk']:checked").each(function(){
+			 	arrayParam.push($(this).val());
+			 });
+			 console.log("배열!!! \n");
+			 console.log(arrayParam);
+			 
+			  var formData = JSON.stringify(arrayParam);
+		       
+			 $.ajax({
+				url : "/push/json/deletePush",
+				type : "POST",
+				data : formData,
+				headers : {
+					"Accept" : "application/json",
+					"Content-Type" : "application/json"
+				},
+				success : function() {
+					console.log("알림 삭제 성공");
+					getPushList(userId);
+				},
+				error : function(error) {
+					console.log("알림 삭제 실패");
+					console.log(error);
+				}
+			 })
+			 
+		 }
+		 
 		  jQuery(document).ready(function($) {
 				
 			  getPushList(userId);
@@ -310,10 +350,10 @@
 	            $(".footerBar-content").hide();
 
 	            // when .menuBtn is clicked, do this
-	            $(".footerBar").click(function() {
+	            $(".footerBar h4").click(function() {
 
 	            	readPush(userId);
-					setTimeout(() => getUnreadCount(userId), 100);
+					setTimeout(() => getUnreadCount(userId), 50);
 					
 	                // open the menu with slide effect
 	                $(".footerBar-content").slideToggle(300);

@@ -59,8 +59,7 @@ public class PushServiceImpl implements PushService {
 
 	@Override
 	public void deletePush(List<String> pushId) throws Exception {
-		// TODO Auto-generated method stub
-		
+		pushDao.deletePush(pushId);
 	}
 
 	@Override

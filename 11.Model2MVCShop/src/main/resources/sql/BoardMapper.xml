@@ -49,12 +49,11 @@
 		SELECT  board_no, user_id, title, content, reg_date
 		FROM board
 		<if test="search.searchCondition != null">
-		WHERE
 				<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
-	 				title LIKE '%${search.searchKeyword}%'
+	 				WHERE title LIKE '%${search.searchKeyword}%'
 				</if>
 				<if test="search.searchCondition == 1 and search.searchKeyword !='' ">
-	 				content LIKE '%${search.searchKeyword}%'
+	 				WHERE content LIKE '%${search.searchKeyword}%'
 				</if>
 		</if>
 		ORDER BY reg_date DESC

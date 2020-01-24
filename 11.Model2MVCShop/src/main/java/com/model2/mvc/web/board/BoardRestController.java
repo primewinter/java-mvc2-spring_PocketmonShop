@@ -57,21 +57,24 @@ public class BoardRestController {
 	
 	
 	@RequestMapping( value="json/addCmt" )
-	public void addBoard( @RequestBody Map<String, Object> jsonMap) throws Exception {
+	public void addCmt( @RequestBody Map<String, Object> jsonMap) throws Exception {
 	//public Cmt addBoard( @RequestParam(value="boardNo") int boardNo, @RequestParam(value="content") String content, @RequestParam(value="userId") String userId) throws Exception {
 
 		System.out.println("json/addCmt.do");
 		ObjectMapper objectmapper = new ObjectMapper();
 		Cmt cmt = objectmapper.convertValue(jsonMap.get("cmt"), Cmt.class);
 		System.out.println("cmt :: "+cmt);
-		
-		Push push = new Push();
-		push.setRefId(cmt.getBoardNo()+"");
-		push.setPushType("R");
+		boardService.addCmt(cmt);
 		Board board = boardService.getBoard(cmt.getBoardNo());
-		push.setReceiverId(board.getUserId());
-		
-		/*
+		if( !board.getUserId().equals(cmt.getUserId())) {
+			System.out.println("글 작성자 =/= 댓글 작성자");
+			Push push = new Push();
+			push.setRefId(cmt.getBoardNo()+"");
+			push.setPushType("R");
+			push.setReceiverId(board.getUserId());
+			pushService.addPush(push);
+		}
+		/* 왜 안 되는지 확실히 짚고 넘어가기
 		 * System.out.println("boardNo :: "+boardNo);
 		 * System.out.println("content :: "+content);
 		 * System.out.println("userId :: "+userId);
@@ -79,8 +82,7 @@ public class BoardRestController {
 		 * Cmt(); cmt.setBoardNo(boardNo); cmt.setContent(content);
 		 * cmt.setUserId(userId);
 		 */
-		boardService.addCmt(cmt);
-		pushService.addPush(push);
+		
 	}
 	
 	@RequestMapping( value="json/getBoard" )

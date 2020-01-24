@@ -23,15 +23,15 @@
 	
   	
 	<insert id="addPush" parameterType="push">
-		INSERT INTO push (push_id, push_type, ref_id, push_date, read, receiver_id, cmt_count)
-		VALUES (seq_push_id.NEXTVAL, #{pushType}, #{refId}, SYSTIMESTAMP, 'F', #{receiverId}, 1 )
+		INSERT INTO push (push_id, push_type, ref_id, push_date, read, receiver_id, cmt_count, deleted)
+		VALUES (seq_push_id.NEXTVAL, #{pushType}, #{refId}, SYSTIMESTAMP, 'F', #{receiverId}, 1, 'F' )
 	</insert>
 	
 	<sql id="select-pushList">
 		SELECT  p.push_id, p.push_type, p.ref_id, p.push_date, p.read, p.cmt_Count, b.title
 		FROM push p, board b
 		WHERE p.ref_id = b.board_no
-						AND receiver_id = #{receiverId} AND deleted IS NULL
+						AND receiver_id = #{receiverId} AND deleted = 'F'
 		ORDER BY push_date DESC
 	</sql>
 	
@@ -55,7 +55,7 @@
 	
 	<update id ="updateCmtCount" parameterType = "push">
 		UPDATE push
-		SET cmt_count = cmt_count + 1, push_date = SYSTIMESTAMP, read='F'
+		SET cmt_count = cmt_count + 1, push_date = SYSTIMESTAMP, read='F', deleted = 'F'
 		WHERE ref_id = #{refId}
 	</update>
 	
@@ -68,7 +68,7 @@
 	
 	<update id = "deletePush">
 		UPDATE push
-		SET read = 'T'
+		SET deleted = 'T', cmt_count = 0
 		WHERE push_id IN
 		<foreach collection="list" item="item" open="(" close=")" separator=",">#{item}</foreach>
 	</update>

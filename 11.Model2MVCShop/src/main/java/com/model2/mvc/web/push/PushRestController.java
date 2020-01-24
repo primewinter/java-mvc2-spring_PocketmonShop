@@ -80,7 +80,7 @@ public class PushRestController {
 	}
 	
 	@RequestMapping(value="json/deletePush")
-	public void deletePush(List<String> pushId ) throws Exception {
+	public void deletePush(@RequestBody List<String> pushId ) throws Exception {
 		System.out.println("json/deletePush :: "+pushId);
 		pushService.deletePush(pushId);
 	}
