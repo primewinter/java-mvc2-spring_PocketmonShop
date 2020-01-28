@@ -117,7 +117,7 @@
  		<div class="footerBar-content">
  			 
 				    <!-- 결과 메시지 보여주는 창 -->
-				    <div class="pushList" style="overflow-x:hidden; width:200px; height:300px;">
+				    <div class="pushList" style="overflow-y:auto; width:200px; height:220px;">
 				    </div>
 				    <br />
 				    
@@ -156,6 +156,7 @@
    	
    	<script type="text/javascript">
     var userId = '${user.userId}';
+
 		//============= logout Event  처리 =============	
 		$("button[type='submit']").on("click", function() {
 		        $("#currentPage").val(1);
@@ -246,6 +247,7 @@
 					 var resultPage = result.resultPage;
 					 var search = result.search;
 					 console.log("list.size : "+list.size);
+					 
 					 var tag = "<div class='chkPushList'>"
 					 tag += "<a href='javascript:deletePush()'>삭제</a><hr>";
 					 for(var i = 0 in list) {
@@ -254,7 +256,6 @@
 					 	tag += list[i].pushMsg+"</a><br>";
 					 }
 					 
-					 tag += "<br>"
 					 tag += "</div>"
 					 
 					 $('.pushList').html(tag);
@@ -268,6 +269,78 @@
 			 })
 		 }
 		 
+		 // <무한스크롤 ----------------------------------------------------------------------------
+		var currentPage = 2;
+	    var isEnd = false;
+	    
+	    // 스크롤 감지
+	    $(".pushList").scroll(function(){
+	    	var scrollTop = $(this).scrollTop(); // 현재 스크롤의 위치
+	    	var innerHeight = $(this).innerHeight(); // 패딩값을 포함한 현재 .pushList 구역의 높이
+	    	var scrollHeight = $(this).prop('scrollHeight'); // 스크롤 시키지 않았을 때의 전체 높이
+	    	//console.log("ScrollTop : "+scrollTop+"|| innerHeight : "+innerHeight+"|| scrollHeight : "+scrollHeight);
+	    	if( scrollTop + innerHeight >= scrollHeight ) { // scrollTop() 과 innerHeight() 값을 더한 값이 scrollHeight() 보다 같거나 크게 되면 맨 아래 감지 가능
+	    		console.log("스크롤 최하단에 위치")
+				scrollList();
+	    	}
+	    })
+	    
+		 // 스크롤 최하단에 위치 시 작동할 function(무한스크롤) : 리스트 호출
+		 function scrollList() {
+			 if(isEnd == true){  //더 이상 불러올 data가 없는 경우 return
+				 console.log("if(isEnd == true) 들어옴")
+				 return;
+			 }
+			console.log("scrollList 시작")
+			 
+			 var search = new Object();
+			 search.currentPage = currentPage;
+			 
+			 $.ajax({
+				url : "/push/json/getPushList/"+userId,
+				type : "POST",
+				data : JSON.stringify({search}),
+				dataType : "json",
+				headers : {
+					"Accept" : "application/json",
+					"Content-Type" : "application/json"
+				},
+				success : function(list) {
+					 console.log(list);
+					
+					var length = list.length;
+					console.log("받아온 data의 길이 : "+length);
+					console.log("currentPage : "+currentPage)
+				
+					if( length < 5 ){
+						isEnd = true;
+						console.log("남은 데이터가 5개 미만이므로 isEnd = true;")
+					}
+					
+					 $.each(list, function(index, vo){
+						showList(vo);
+					})
+					
+					currentPage++;
+				},
+				error : function(error){
+					console.log("fetchList 실패");
+					console.log(error);
+				}
+			 })
+		 }
+		 
+		 // 리스트 호출 시 작동할 function : 리스트 화면에 출력
+		 function showList(vo) {
+			 var tag = "";
+			 tag += "<input type='checkbox' name='chk' id='"+vo.pushId+"' value='"+vo.pushId+"'>";
+			 tag+= "<a href='/board/getBoard?boardNo="+vo.refId+"'>";
+			 tag +=vo.pushMsg+"</a><br>";
+		  	 $(".chkPushList").append(tag);
+		 }
+		 
+		// ----------------------------------------------------------------------------------------- 무한스크롤>
+		
 		 function getUnreadCount(userId) {
 			 $.ajax({
 				 url : "push/json/getUnreadCount/"+userId,

@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.model2.mvc.common.Page;
@@ -54,13 +55,12 @@ public class PushRestController {
 		return unreadCount;
 	}
 	
-	@RequestMapping(value="json/getPushList/{userId}")
+	@RequestMapping(value="json/getPushList/{userId}", method=RequestMethod.GET)
 	public Map<String, Object> getPushList(@PathVariable("userId")String userId) throws Exception {
-		System.out.println("json/getPushList :: @RequestBody User : "+userId);
+		System.out.println("json/getPushList :: @PathVariable : "+userId);
 		Search search = new Search();
 		search.setCurrentPage(1);
 		search.setPageSize(pageSize);
-		
 		Map<String , Object> map = pushService.getPushList(search, userId);
 		System.out.println(" :: pushServic.getPushList(search, userId) 완료");
 		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
@@ -71,6 +71,24 @@ public class PushRestController {
 		result.put("search", search);
 		
 		return result;
+	}
+	
+	@RequestMapping(value="json/getPushList/{userId}", method=RequestMethod.POST)
+	public List<Push> getPushList(@PathVariable("userId")String userId, @RequestBody Map<String, Object> jsonMap) throws Exception {
+		System.out.println("json/getScrollList_POST :: @PathVariable : "+userId);
+		
+		ObjectMapper objectmapper = new ObjectMapper();
+		Search search = objectmapper.convertValue(jsonMap.get("search"), Search.class);
+		System.out.println("json/getScrollList_POST :: @RequestBody Search: "+search);
+		
+		if(search.getCurrentPage()==0) {
+			search.setCurrentPage(1);
+		}
+		search.setPageSize(pageSize);
+		Map<String , Object> map = pushService.getPushList(search, userId);
+		System.out.println(" :: pushService.getPushList(search, userId) 완료");
+		
+		return (List<Push>)map.get("list");
 	}
 	
 	@RequestMapping(value="json/readPush/{userId}")
