@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BoardMapper">
+ 	
+ 	
+	<resultMap id="boardSelectMap" type="board">
+	
+		<result property="boardNo" column="board_no" jdbcType="NUMERIC"/>
+		<result property="userId" 		column="user_id"		jdbcType="VARCHAR"/>
+		<result property="regDate" column="reg_date" jdbcType="DATE"/>
+		<result property="title" column="title" jdbcType="VARCHAR"/>
+		<result property="content" column="content" jdbcType="VARCHAR"/>
+		
+	</resultMap>
+	
+	<resultMap id="cmtSelectMap" type="cmt">
+	
+		<result property="cmtNo" column="cmt_no" jdbcType="NUMERIC"/>
+		<result property="userId" 		column="user_id"		jdbcType="VARCHAR"/>
+		<result property="regDate" column="reg_date" jdbcType="DATE"/>
+		<result property="boardNo" column="board_no" jdbcType="VARCHAR"/>
+		<result property="content" column="cmt_content" jdbcType="VARCHAR"/>
+		
+	</resultMap>
+  	
+	<insert id="addBoard" parameterType="board">
+		INSERT INTO board (board_no, user_id, title, content, reg_date)
+		VALUES (seq_board_no.NEXTVAL, #{userId}, #{title}, #{content}, SYSDATE)
+	</insert>
+	
+	<insert id="addCmt" parameterType="cmt">
+		INSERT INTO cmt (cmt_no, board_no, user_id, cmt_content, reg_date)
+		VALUES (seq_board_no.NEXTVAL, #{boardNo}, #{userId}, #{content}, SYSDATE)
+	</insert>
+	
+	<select id="getCmtList" parameterType="int" resultMap="cmtSelectMap">
+		SELECT cmt_no, user_id, cmt_content, reg_Date
+		FROM cmt 
+		WHERE board_no = #{value}
+		ORDER BY reg_date
+	</select>
+	
+	
+	<sql id="select-boardList">
+		SELECT  board_no, user_id, title, content, reg_date
+		FROM board
+		<if test="search.searchCondition != null">
+				<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
+	 				WHERE title LIKE '%${search.searchKeyword}%'
+				</if>
+				<if test="search.searchCondition == 1 and search.searchKeyword !='' ">
+	 				WHERE content LIKE '%${search.searchKeyword}%'
+				</if>
+		</if>
+		ORDER BY reg_date DESC
+	</sql>
+	
+	<update id ="updateBoard" parameterType = "board">
+		UPDATE board
+		SET title = #{title}, content = #{content}
+		WHERE board_no=#{boardNo}
+	</update>
+	
+	<select id ="getBoard" parameterType = "int" resultMap="boardSelectMap">
+		SELECT  board_no, user_id, title, content, reg_date
+		FROM board
+		WHERE board_no=#{boardNo}
+	</select>
+	
+	
+	
+	<select  id="getBoardList"  parameterType="map"	resultMap="boardSelectMap">
+  		SELECT * FROM
+  						(	SELECT inner_table.* , ROWNUM AS row_seq
+  							FROM		(	<include refid="select-boardList"/> 	) inner_table
+							WHERE ROWNUM <![CDATA[ <=]]> #{search.endRowNum}	)
+		WHERE row_seq BETWEEN #{search.startRowNum} AND #{search.endRowNum} 
+	</select>
+	
+	<delete id = "deleteBoard">
+		DELETE FROM board
+		WHERE board_no IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">#{item}</foreach>
+	</delete>
+	
+	 
+	 <select  id="getTotalCount"  parameterType="map"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	
+	  		<include refid="select-boardList"/>
+	  	 ) countTable						
+	</select>
+	 
+	 
+	
+</mapper>

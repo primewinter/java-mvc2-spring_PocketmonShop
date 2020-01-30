@@ -1,5 +1,7 @@
 package com.model2.mvc.web.push;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
+import com.model2.mvc.service.domain.Plan;
 import com.model2.mvc.service.domain.Push;
 import com.model2.mvc.service.domain.User;
 import com.model2.mvc.service.push.PushService;
@@ -108,5 +111,22 @@ public class PushRestController {
 		System.out.println("json/getUnreadCount :: "+userId);
 		return pushService.getUnreadCount(userId);
 	}
+	
+	@RequestMapping(value="json/enterPlan/{planId}")
+	public String enterPlan(@PathVariable("planId") String planId ) throws Exception {
+		System.out.println("json/enterPlan :: "+planId);
+		return planId;
+	}
+	
+	@RequestMapping(value="json/pushPlanRandom/{planId}")
+	public void pushPlanRandom(@PathVariable("planId") String planId ) throws Exception {
+		Plan plan = new Plan();
+		//Plan plan = planService.getPlan(planId);
+		SimpleDateFormat toDate = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+		Date date = toDate.parse(plan.getStartDate());
+				
+		
+	}
+	
 
 }

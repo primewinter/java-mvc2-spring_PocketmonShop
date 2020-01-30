@@ -163,7 +163,7 @@ public class ProductController {
 	}
 	
 	//업로드한 파일 저장할 절대경로
-	private static final String UPLOAD_PATH = "C:\\workspace\\11.Model2MVCShop\\WebContent\\images\\uploadFiles";
+	private static final String UPLOAD_PATH = "C:\\Users\\USER\\git\\repository3\\11.Model2MVCShop\\WebContent\\images\\uploadFiles";
 	
 	//MultipartFile로 받아서 파일 저장하고 이름 추출하는 메소드
 	private String saveFile(MultipartFile file){

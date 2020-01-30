@@ -23,13 +23,12 @@ public final class Result {
     public static void main(String[] args) {
     	String appId = "mchc";
     	String apiKey = "d331e1d0417011eab9d70cc47a1fcfae";
-        if(args.length != 1) {
-            System.err.println("Usage:");
-            System.err.println("  ./result delivery-id");
-            return;
-        }
+		/*
+		 * if(args.length != 1) { System.err.println("Usage:");
+		 * System.err.println("  ./result delivery-id"); return; }
+		 */
         String hostname = "api.bluehouselab.com";
-        String url = "https://"+hostname+"/smscenter/v1.0/result/"+args[0];
+        String url = "https://"+hostname+"/smscenter/v1.0/result/"+"4ba556aa417211ea95da0cc47a1fcfae";
 
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(

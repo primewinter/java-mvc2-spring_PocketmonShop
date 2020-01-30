@@ -1,4 +1,4 @@
-package com.model2.mvc.web.chat;
+package com.model2.mvc.common.NOTUSED;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,8 +22,8 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@ServerEndpoint("/replyPush/{userId}")
-public class Push {
+//@ServerEndpoint("/replyPush/{userId}")
+public class Push2 {
 
 			private static Map<String, List<Session>> slMap = Collections.synchronizedMap(new HashMap<>());
 			private static Map<String, TimerTask> checkMap = Collections.synchronizedMap(new HashMap<>());

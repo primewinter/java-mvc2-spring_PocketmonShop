@@ -126,10 +126,12 @@ $(function() {
 				getCmtList(boardNo);
 				$("#content").val('');
 				
-				
 				//글 작성자에게 push 하기
 				var writer = '${board.userId}';
-			  	webSocket.send("PUSH"+boardNo+","+writer);
+				var push = new Object();
+				push.receiverId = writer;
+				push.pushType = 'R';
+			  	webSocket.send(JSON.stringify({push}));
 				console.log("push 보냈음")
 			},
 			error: function(err) {

@@ -68,15 +68,20 @@ public class Push {
 		this.unread = unread;
 	}
 	public String getPushMsg() {
-		if(getPushType().trim().equals("R")) {
-			return  "[댓글] ["+getTitle()+"]에 댓글이 ("+getCmtCount()+")개 달렸습니다. "+getPushTime();
-		} else if(getPushType().trim().equals("P")) {
-			return  "[초대] "+ getRefId()+"번 플래너에 초대되었습니다. "+getPushTime();
-		} else if(getPushType().trim().equals("A")) {
-			return  "[동행] "+ getRefId()+"번 동행에 신청이 들어왔습니다. "+getPushTime();
+		if(refId == null || refId.equals("")) {
+			return pushMsg;
 		} else {
-			return  "[알림] "+ getRefId()+"번 알림이 있습니다. "+getPushTime();
+			if(pushType.trim().equals("R")) {
+				return  "[댓글] ["+title+"]에 댓글이 ("+cmtCount+")개 달렸습니다. "+getPushTime();
+			} else if(getPushType().trim().equals("P")) {
+				return  "[초대] "+ refId+"번 플래너에 초대되었습니다. "+getPushTime();
+			} else if(getPushType().trim().equals("A")) {
+				return  "[동행] "+ refId+"번 동행에 신청이 들어왔습니다. "+getPushTime();
+			} else {
+				return  "[알림] "+ refId+"번 알림이 있습니다. "+getPushTime();
+			}
 		}
+	
 	}
 	public void setPushMsg(String pushMsg) {
 		this.pushMsg = pushMsg;
@@ -85,24 +90,30 @@ public class Push {
 	public String getPushTime() {
 		long now = System.currentTimeMillis(); 
 		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy.MM.dd");
-		long pDate = pushDate.getTime();
-		long diff = now-pDate;
-		
-		long sec = diff/1000; //초 단위
-		long min = diff/(60*1000); //분 단위
-		long hour = diff/(1000*60*60); //시간 단위
-		
-		if( sec == 0 ) {
-			return "1초 전";
-		} else if( sec < 60 ) {
-			return sec+"초 전";
-		} else if(min < 60) {
-			return min+"분 전";
-		} else if(hour < 24) {
-			return hour+"시간 전";
+		long pDate;
+		long diff;
+		if(pushDate != null) {
+			 pDate = pushDate.getTime();
+			 diff = now-pDate;
+			 long sec = diff/1000; //초 단위
+			 long min = diff/(60*1000); //분 단위
+			 long hour = diff/(1000*60*60); //시간 단위
+			 
+			 if( sec == 0 ) {
+				 return "1초 전";
+			 } else if( sec < 60 ) {
+				 return sec+"초 전";
+			 } else if(min < 60) {
+				 return min+"분 전";
+			 } else if(hour < 24) {
+				 return hour+"시간 전";
+			 } else {
+				 return dayTime.format(pDate);
+			 }
 		} else {
-			return dayTime.format(pDate);
+			return pushTime;
 		}
+		
 	}
 	public void setPushTime(String pushTime) {
 		this.pushTime = pushTime;

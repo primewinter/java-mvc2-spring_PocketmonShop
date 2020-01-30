@@ -55,6 +55,11 @@
 	                         <span ><img src="/images/menu/61503ea8.png"> 게시판</span>
 	                     </a>
                  </li>
+				<li>
+	                     <a  href="#" role="button" aria-expanded="false">
+	                         <span ><img src="/images/menu/61503ea8.png"> 채팅</span>
+	                     </a>
+                 </li>
 
 
 	              <c:if test="${sessionScope.user.role == 'admin'}">
@@ -122,26 +127,33 @@
 				    <br />
 				    
 				    <script type="text/javascript">
-				        //websocket 클래스 이름
-				        var chatAddr = "ws://192.168.0.82:8080/websocket/${user.userId}";
-				        var webSocket = new WebSocket(chatAddr);
+				        var pushAddr = "ws://192.168.0.82:8080/websocket/${user.userId}";
+				        var webSocket = new WebSocket(pushAddr);
 				        //웹 소켓이 연결되었을 때 호출되는 이벤트
 				        webSocket.onopen = function(message){
-				              console.log('Info : connection opened.')
+				              console.log('[push] : connection opened.')
 				          	  //웹 소켓에서 메시지가 날라왔을 때 호출되는 이벤트
 					          webSocket.onmessage = function(message){
-					        	  getPushList(userId);
-					        	  getUnreadCount(userId);
+				            	  console.log("push 왔다 ::: "+message.data)
+				            	  var obj = JSON.parse(message.data);
+				            	  var pushType = obj.pushType;
+				            	  if(pushType=='T') {
+				            		  var pushMsg = obj.pushMsg;
+				            		  console.log(pushMsg);
+				            	  } else {
+					        	  	getPushList(userId);
+					        	  	getUnreadCount(userId);
+				            	  }
 					        };
 				            
 				        };
 				        //웹 소켓이 닫혔을 때 호출되는 이벤트
 				        webSocket.onclose = function(message){
-				            console.log("접속이 끊어졌습니다.\n");
+				            console.log("push 접속이 끊어졌습니다.\n");
 				        };
 				        //웹 소켓이 에러가 났을 때 호출되는 이벤트
 				        webSocket.onerror = function(message){
-				            console.log("에러가 발생했습니다.\n");
+				            console.log("push 에러가 발생했습니다.\n");
 				        };
 				        
 				        //웹소켓 종료
@@ -174,6 +186,10 @@
 		 	
 		 	$( "a:contains('오박사')" ).on("click" , function() {
 		 		self.location = "/product/crawling.jsp"
+			});
+		 	
+		 	$( "a:contains('채팅')" ).on("click" , function() {
+		 		self.location = "/chat/enterChat.jsp"
 			});
 		 	
 		 	$( "a:contains('게시판')" ).on("click" , function() {
@@ -234,7 +250,7 @@
 		 
 		 function getPushList(userId) {
 			 $.ajax({
-				 url : "push/json/getPushList/"+userId,
+				 url : "/push/json/getPushList/"+userId,
 				 type : "GET",
 				 dataType : "json",
 				 headers : {
@@ -270,8 +286,8 @@
 		 }
 		 
 		 // <무한스크롤 ----------------------------------------------------------------------------
-		var currentPage = 2;
-	    var isEnd = false;
+		var pushPage = 2;
+	    var end = false;
 	    
 	    // 스크롤 감지
 	    $(".pushList").scroll(function(){
@@ -287,14 +303,14 @@
 	    
 		 // 스크롤 최하단에 위치 시 작동할 function(무한스크롤) : 리스트 호출
 		 function scrollList() {
-			 if(isEnd == true){  //더 이상 불러올 data가 없는 경우 return
-				 console.log("if(isEnd == true) 들어옴")
+			 if(end == true){  //더 이상 불러올 data가 없는 경우 return
+				 console.log("if(end == true) 들어옴")
 				 return;
 			 }
 			console.log("scrollList 시작")
 			 
 			 var search = new Object();
-			 search.currentPage = currentPage;
+			 search.currentPage = pushPage;
 			 
 			 $.ajax({
 				url : "/push/json/getPushList/"+userId,
@@ -310,7 +326,7 @@
 					
 					var length = list.length;
 					console.log("받아온 data의 길이 : "+length);
-					console.log("currentPage : "+currentPage)
+					console.log("currentPage : "+pushPage)
 				
 					if( length < 5 ){
 						isEnd = true;
@@ -321,7 +337,7 @@
 						showList(vo);
 					})
 					
-					currentPage++;
+					pushPage++;
 				},
 				error : function(error){
 					console.log("fetchList 실패");
@@ -343,7 +359,7 @@
 		
 		 function getUnreadCount(userId) {
 			 $.ajax({
-				 url : "push/json/getUnreadCount/"+userId,
+				 url : "/push/json/getUnreadCount/"+userId,
 				 type : "GET",
 				 dataType : "json",
 				 headers : {
@@ -364,7 +380,7 @@
 		 
 		 function readPush(userId) {
 			 $.ajax({
-				 url : "push/json/readPush/"+userId,
+				 url : "/push/json/readPush/"+userId,
 				 type : "GET",
 				 headers : {
 					 "Accept" : "application/json",

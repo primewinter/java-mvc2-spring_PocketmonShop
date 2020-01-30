@@ -1,4 +1,4 @@
-package com.model2.mvc.web.chat;
+package com.model2.mvc.common.NOTUSED;
 
 import java.util.ArrayList;
 import java.util.List;

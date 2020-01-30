@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PushMapper">
+
+	<resultMap id="pushSelectMap" type="push">
+	
+		<result property="pushId" 				column="push_id" 			jdbcType="NUMERIC"/>
+		<result property="pushType" 		column="push_type"		jdbcType="VARCHAR"/>
+		<result property="refId" 					column="ref_id"					jdbcType="VARCHAR"/>
+		<result property="pushDate" 			column="push_date"		jdbcType="TIMESTAMP"/>
+		<result property="receiverId" 		column="receiver_id"		jdbcType="VARCHAR"/>
+		<result property="read" 					column="read" 					jdbcType="CHAR"/>
+		<result property="cmtCount" 			column="cmt_count" 		jdbcType="INTEGER"/>
+		
+		<result property="title"						column="title"						jdbcType="VARCHAR"/>
+		<result property="title"						column="cmt_content"		jdbcType="VARCHAR"/>
+		
+	</resultMap>
+	
+  	
+	<insert id="addPush" parameterType="push">
+		INSERT INTO push (push_id, push_type, ref_id, push_date, read, receiver_id, cmt_count, deleted)
+		VALUES (seq_push_id.NEXTVAL, #{pushType}, #{refId}, SYSTIMESTAMP, 'F', #{receiverId}, 1, 'F' )
+	</insert>
+	
+	<sql id="select-pushList">
+		SELECT  p.push_id, p.push_type, p.ref_id, p.push_date, p.read, p.cmt_Count, b.title
+		FROM push p, board b
+		WHERE p.ref_id = b.board_no
+						AND receiver_id = #{receiverId} AND deleted = 'F'
+		ORDER BY push_date DESC
+	</sql>
+	
+	<select id="getPushId" parameterType="push" resultType="String">
+		SELECT push_id
+		FROM push
+		WHERE ref_id = #{refId} AND receiver_id = #{receiverId}
+	</select>
+	
+	<select id ="getCmtCount" parameterType = "push" resultType="push">
+		SELECT cmt_count
+		FROM push
+		WHERE ref_id = #{refId} AND receiver_id = #{receiverId}
+	</select>
+	
+	<select id ="getUnreadCount" parameterType = "push" resultType="int">
+		SELECT count(*)
+		FROM push
+		WHERE receiver_id = #{receiverId} AND read = 'F'
+	</select>
+	
+	<update id ="updateCmtCount" parameterType = "push">
+		UPDATE push
+		SET cmt_count = cmt_count + 1, push_date = SYSTIMESTAMP, read='F', deleted = 'F'
+		WHERE ref_id = #{refId}
+	</update>
+	
+	<update id ="readPush" parameterType="String">
+		UPDATE push
+		SET read = 'T'
+		WHERE receiver_id = #{userId}
+	</update>
+	
+	
+	<update id = "deletePush">
+		UPDATE push
+		SET deleted = 'T', cmt_count = 0
+		WHERE push_id IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">#{item}</foreach>
+	</update>
+	
+	
+	<select  id="getPushList"  parameterType="map"	resultMap="pushSelectMap">
+  		SELECT * FROM
+  						(	SELECT inner_table.* , ROWNUM AS row_seq
+  							FROM		(	<include refid="select-pushList"/> 	) inner_table
+							WHERE ROWNUM <![CDATA[ <=]]> #{search.endRowNum}	)
+		WHERE row_seq BETWEEN #{search.startRowNum} AND #{search.endRowNum} 
+	</select>
+	 
+	 <select  id="getTotalCount"  parameterType="map"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(	
+	  		<include refid="select-pushList"/>
+	  	 ) countTable						
+	</select>
+	 
+	 
+	
+</mapper>
