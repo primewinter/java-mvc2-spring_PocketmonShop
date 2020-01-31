@@ -28,7 +28,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import sun.usagetracker.UsageTrackerClient;
+//import sun.usagetracker.UsageTrackerClient;
 
 /* XXX didn't use org.json to be simple
 import org.json.JSONObject; 

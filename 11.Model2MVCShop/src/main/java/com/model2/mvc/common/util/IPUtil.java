@@ -7,7 +7,7 @@ public class IPUtil {
 	public static String getClientIP(HttpServletRequest request) {
 		
 		String ip = request.getHeader("X-FORWARDED-FOR");
-
+		
 		if (ip == null) {
 			ip = request.getHeader("Proxy-Client-IP");
 		}
