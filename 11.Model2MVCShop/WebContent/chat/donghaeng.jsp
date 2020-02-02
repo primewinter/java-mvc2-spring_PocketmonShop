@@ -69,17 +69,56 @@
 
 	<jsp:include page="/layout/toolbar.jsp" />
 
-<form name = "detailForm" action="/chat/getPlan" method="GET">
+<form name = "detailForm">
 <div class="container">
     <div class="wrapper">
         <div class="one">
-        		<h3>채팅방 선택(플래너 선택)</h3>
+        		<h3>채팅</h3>
      	</div>
         <div class="two">
-        	<input type="text" name="planId">
-        	<input type="submit" value="플래너입장">
+			        <!-- 송신 메시지 작성하는 창 -->
+			        <input id="textMessage" type="text">
+			        <!-- 송신 버튼 -->
+			        <input onclick="sendMessage()" value="Send" type="button">
+			
+			        <!-- 종료 버튼 -->
+			        <input onclick="disconnect()" value="Disconnect" type="button">
+				    <br />
+				    <!-- 결과 메시지 보여주는 창 -->
+				    <textarea id="messageTextArea" rows="10" cols="50"></textarea>
+				    <script type="text/javascript">
+							 // events 모듈 사용
+						    var events = require('events');
+		
+						    // EventEmitter 객체 생성
+						    var eventEmitter = new events.EventEmitter();
+		
+						    // EventHandler 함수 생성
+						    var connectHandler = function connected(){
+						        console.log("Connection Successful");
+						        
+						        // data_recevied 이벤트를 발생시키기
+						        eventEmitter.emit("data_received");
+						    }
+		
+						    // connection 이벤트와 connectHandler 이벤트 핸들러를 연동
+						    eventEmitter.on('connection', connectHandler);
+		
+						    // data_received 이벤트와 익명 함수와 연동
+						    // 함수를 변수안에 담는 대신에, .on() 메소드의 인자로 직접 함수를 전달
+						    eventEmitter.on('data_received', function(){
+						        console.log("Data Received");
+						    });
+		
+						    // connection 이벤트 발생시키기
+						    eventEmitter.emit('connection');
+		
+						    console.log("Program has ended");
+				    </script>
        	</div>
        	<div class=three>
+       		<ul class="chat_box">
+		    </ul>
        	</div>
     </div>
 </div>

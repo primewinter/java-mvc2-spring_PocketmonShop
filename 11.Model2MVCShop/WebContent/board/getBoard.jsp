@@ -132,7 +132,7 @@ $(function() {
 				push.receiverId = writer;
 				push.pushType = 'R';
 			  	webSocket.send(JSON.stringify({push}));
-				console.log("push º¸³ÂÀ½")
+				console.log("push º¸³ÂÀ½ ::"+JSON.stringify({push}));
 			},
 			error: function(err) {
 				console.log("´ñ±Û µî·Ï ½ÇÆÐ");

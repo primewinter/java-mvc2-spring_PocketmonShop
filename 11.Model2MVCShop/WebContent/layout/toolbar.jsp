@@ -57,7 +57,12 @@
                  </li>
 				<li>
 	                     <a  href="#" role="button" aria-expanded="false">
-	                         <span ><img src="/images/menu/61503ea8.png"> 채팅</span>
+	                         <span ><img src="/images/menu/61503ea8.png"> 플래너 채팅</span>
+	                     </a>
+                 </li>
+                 <li>
+	                     <a  href="#" role="button" aria-expanded="false">
+	                         <span ><img src="/images/menu/61503ea8.png"> 동행</span>
 	                     </a>
                  </li>
 
@@ -137,6 +142,7 @@
 				            	  console.log("push 왔다 ::: "+message.data)
 				            	  var obj = JSON.parse(message.data);
 				            	  var pushType = obj.pushType;
+				            	  console.log("pushType :: "+pushType);
 				            	  if(pushType=='T') {
 				            		  var pushMsg = obj.pushMsg;
 				            		  console.log(pushMsg);
@@ -190,6 +196,10 @@
 		 	
 		 	$( "a:contains('채팅')" ).on("click" , function() {
 		 		self.location = "/chat/enterChat.jsp"
+			});
+		 	
+		 	$( "a:contains('동행')" ).on("click" , function() {
+		 		self.location = "/chat/donghaeng.jsp"
 			});
 		 	
 		 	$( "a:contains('게시판')" ).on("click" , function() {
