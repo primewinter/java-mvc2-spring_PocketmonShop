@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
-import com.model2.mvc.common.util.FutureWorkThread;
 import com.model2.mvc.service.board.BoardService;
 import com.model2.mvc.service.domain.Board;
 import com.model2.mvc.service.domain.User;

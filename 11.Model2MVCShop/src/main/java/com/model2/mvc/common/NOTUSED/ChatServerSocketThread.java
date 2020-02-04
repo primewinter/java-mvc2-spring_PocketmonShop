@@ -1,4 +1,4 @@
-package com.model2.mvc.common.util;
+package com.model2.mvc.common.NOTUSED;
 
 import java.io.BufferedReader;
 import java.io.IOException;

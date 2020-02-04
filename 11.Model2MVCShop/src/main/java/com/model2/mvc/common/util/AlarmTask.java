@@ -16,7 +16,8 @@ public class AlarmTask {
 		System.out.println(this.getClass());
 	}
 	
-	//@Scheduled(cron = "0 0 10 * * *")
+	
+	//@Scheduled(cron = "0 0 10 * * *") //매일 10시에 문자 보내기
 	public void AlarmPlan() {
 		long now = System.currentTimeMillis();
 		List<Plan> list = new ArrayList<Plan>();

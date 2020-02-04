@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.model2.mvc.service.domain.Plan;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -37,12 +35,10 @@ public class ChatController {
 	}
 	
 	public void connectMongoDB(String chatId) throws Exception {
+		
 		// connection을 위한 instance 생성
-		MongoClient mongoClient = MongoClients.create(
-		         MongoClientSettings.builder()
-		                 .applyToClusterSettings(builder ->
-		                         builder.hosts(Arrays.asList(new ServerAddress("hostOne", 27017))))
-		                 .build());
+		MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+		MongoClient mongoClient = new MongoClient(connectionString);
 		
 		// dataBase 접근 : "chat" = 특정 database 이름
 		MongoDatabase database = mongoClient.getDatabase("chat");
@@ -52,12 +48,14 @@ public class ChatController {
 		
 		
 		// document 만들기
-		//document 클래스 객체 생성 시 생성자로 필드 이름과 값을 매개변수로 주면 그에 해당하는 JSON 문서가 만들어 진다. 
-		Document doc = new Document("name", "MongoDB").append("type", "database").append("count", 1);
-		// 값이 배열 형태의 값을 가지고 있을 경우네는 Arrays 클래스의 asList() 메소드를 이용하여 값을 삽입하면 된다.
-		doc.append("versions", Arrays.asList("v3.2", "v3.0", "v2.6"));
-		// 하위 필드가 존재할 경우에는 새로운 Document 객체를 만들어서 필드의 값으로 넣어주면 된다.
-		doc.append("info", new Document("x", 203).append("y", 102));
+		// - document 클래스 객체 생성 시 생성자로 필드 이름과 값을 매개변수로 주면 그에 해당하는 JSON 문서가 만들어 진다. 
+		// - 값이 배열 형태의 값을 가지고 있을 경우네는 Arrays 클래스의 asList() 메소드를 이용하여 값을 삽입하면 된다.
+		// - 하위 필드가 존재할 경우에는 새로운 Document 객체를 만들어서 필드의 값으로 넣어주면 된다.
+		Document doc = new Document("content", "안녕 반가워")
+				.append("type", "database")
+				.append("count", 1)
+				.append("read", Arrays.asList("user01", "user02", "user03"))
+				.append("info", new Document("x", 203).append("y", 102));
 		
 		
 		// 하나의 문서(DOCUMENT) 저장하기

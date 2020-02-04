@@ -87,8 +87,8 @@ public class WebSocket {
 						t.printStackTrace();
 			}
 			
-			public void sendPlanTimer(String userId, Push push) throws Exception {
-				System.out.println("\n\nWebSocket :: sendPlanTimer "+userId);
+			public void sendPush(String userId, Push push) throws Exception {
+				System.out.println("\n\nWebSocket :: sendPush "+userId);
 				for (Map.Entry<String, Session> entry : slMap.entrySet()) {
 					if (entry.getKey().equals(userId)) {
 						String result = new ObjectMapper().writeValueAsString(push);

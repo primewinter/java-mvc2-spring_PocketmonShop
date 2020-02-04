@@ -1,5 +1,5 @@
-<%@ page contentType="text/html; charset=EUC-KR" %>
-<%@ page pageEncoding="EUC-KR"%>
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
 
 <!--  ///////////////////////// JSTL  ////////////////////////// -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -22,6 +22,9 @@
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
 	
+	<!-- 채팅 node js Server	 -->
+	 <script src="http://localhost:82/socket.io/socket.io.js"></script>
+
 	<!-- Bootstrap Dropdown Hover CSS -->
    <link href="/css/animate.min.css" rel="stylesheet">
    <link href="/css/bootstrap-dropdownhover.min.css" rel="stylesheet">
@@ -61,6 +64,21 @@
             padding-top : 90px;
             font-family:  'Noto Sans KR', sans-serif;
         }
+        
+        #chat_box {
+		    width: 500px;
+		    min-width: 500px;
+		    height: 500px;
+		    min-height: 500px;
+		    border: 1px solid black;
+		}
+		#msg {
+			width: 500px;
+		}
+		#msg_process {
+	  		 width: 90px;
+		}
+
      </style>
 	
 </head>
@@ -73,48 +91,46 @@
 <div class="container">
     <div class="wrapper">
         <div class="one">
-        		<h3>채팅</h3>
+        		<h3>동행채팅</h3>
      	</div>
         <div class="two">
-			        <!-- 송신 메시지 작성하는 창 -->
-			        <input id="textMessage" type="text">
-			        <!-- 송신 버튼 -->
-			        <input onclick="sendMessage()" value="Send" type="button">
-			
-			        <!-- 종료 버튼 -->
-			        <input onclick="disconnect()" value="Disconnect" type="button">
-				    <br />
-				    <!-- 결과 메시지 보여주는 창 -->
-				    <textarea id="messageTextArea" rows="10" cols="50"></textarea>
-				    <script type="text/javascript">
-							 // events 모듈 사용
-						    var events = require('events');
-		
-						    // EventEmitter 객체 생성
-						    var eventEmitter = new events.EventEmitter();
-		
-						    // EventHandler 함수 생성
-						    var connectHandler = function connected(){
-						        console.log("Connection Successful");
-						        
-						        // data_recevied 이벤트를 발생시키기
-						        eventEmitter.emit("data_received");
-						    }
-		
-						    // connection 이벤트와 connectHandler 이벤트 핸들러를 연동
-						    eventEmitter.on('connection', connectHandler);
-		
-						    // data_received 이벤트와 익명 함수와 연동
-						    // 함수를 변수안에 담는 대신에, .on() 메소드의 인자로 직접 함수를 전달
-						    eventEmitter.on('data_received', function(){
-						        console.log("Data Received");
-						    });
-		
-						    // connection 이벤트 발생시키기
-						    eventEmitter.emit('connection');
-		
-						    console.log("Program has ended");
-				    </script>
+			       <div id="chat_box"></div>
+				    <input type="text" id="msg">
+				    <button id="msg_process">전송</button>
+				     <script>
+				     $(document).ready(function(){
+			                var chatSocket = io("http://localhost:82");
+			                
+			                //msg에서 키를 누를때
+			                $("#msg").keydown(function(key){
+			                    //해당하는 키가 엔터키(13) 일때
+			                    if(key.keyCode == 13){
+			                        //msg_process를 클릭해준다.
+			                        msg_process.click();
+			                    }
+			                });
+			                
+			                //msg_process를 클릭할 때
+			                $("#msg_process").click(function(){
+			                    //소켓에 send_msg라는 이벤트로 input에 #msg의 value를 담고 보내준다.
+			                     chatSocket.emit("send_msg", $("#msg").val());
+			                    //#msg에 벨류값을 비워준다.
+			                    $("#msg").val("");
+			                });
+			                
+			                //소켓 서버로 부터 send_msg를 통해 이벤트를 받을 경우 
+			                chatSocket.on('send_msg', function(msg) {
+			                    //div 태그를 만들어 텍스트를 msg로 지정을 한뒤 #chat_box에 추가를 시켜준다.
+			                    $('<div></div>').text(msg).appendTo("#chat_box");
+			                });
+
+
+			            });
+
+
+			        </script>
+
+
        	</div>
        	<div class=three>
        		<ul class="chat_box">

@@ -1,6 +1,7 @@
 package com.model2.mvc.service.domain;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public class Plan {
@@ -12,7 +13,8 @@ public class Plan {
 	private String planType;			// plan_type (CHAR) :: 여자혼자(A), 남자혼자(B), 여자끼리(C), 남자끼리(D), 단체(E), 부모님과(F), 커플(G)
 	
 	private Timestamp planRegDate;		// plan_reg_date (TIMESTAMP)
-	private String startDate;			// start_date (TIMESTAMP)
+	private Timestamp startDate;		// start_date (TIMESTAMP)
+	private String startDateString;		
 	private String planStatus;			// plan_status (CHAR) :: 여행준비중(R), 여행완료(C)
 	
 	private String endDate;			//여행종료일자
@@ -22,8 +24,33 @@ public class Plan {
 	private List<User> planPartyList;	//플래너 참여자
 	private int planPartySize;			//플래너 참여인원수
 	
+	private List<Todo> todoList;		//TODO 리스트
+	//private Route route;				//여행루트
+	private List<Day> dayList;			//일차 리스트
+	private List<Daily> dailyList;		//일정 리스트
+	private List<Stuff> stuffList;		//준비물 리스트
+	private List<Memo> memoList;		//메모 리스트
 	
 	
+	private List<City> cityList;		//시티 리스트
+	private List<Daily> budgetOverviewList;	//예산미리보기 리스트
+	
+	public List<City> getCityList() {
+		return cityList;
+	}
+	public void setCityList(List<City> cityList) {
+		this.cityList = cityList;
+	}
+
+	public List<Daily> getBudgetOverviewList() {
+		return budgetOverviewList;
+	}
+	public void setBudgetOverviewList(List<Daily> budgetOverviewList) {
+		this.budgetOverviewList = budgetOverviewList;
+	}
+
+
+
 	public Plan() {
 		super();
 	}
@@ -72,12 +99,28 @@ public class Plan {
 		this.planRegDate = planRegDate;
 	}
 
-	public String getStartDate() {
+
+
+	public Timestamp getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(String startDate) {
+	public void setStartDate(Timestamp startDate) {
 		this.startDate = startDate;
+		
+		if(startDate != null) {
+			Date dateForDay = new Date(startDate.getTime());		//요일을 위한 dateForDay
+			this.startDateString = startDate.toString().substring(0,10) + " : "+dateForDay.toString().substring(0,3);
+		}
 	}
+
+	public String getStartDateString() {
+		return startDateString;
+	}
+	public void setStartDateString(String startDateString) {
+		this.startDateString = startDateString;
+	}
+
+
 
 	public String getPlanStatus() {
 		return planStatus;
@@ -121,15 +164,51 @@ public class Plan {
 		this.planPartySize = planPartySize;
 	}
 
+	public List<Todo> getTodoList() {
+		return todoList;
+	}
+	public void setTodoList(List<Todo> todoList) {
+		this.todoList = todoList;
+	}
 
+	public List<Day> getDayList() {
+		return dayList;
+	}
+	public void setDayList(List<Day> dayList) {
+		this.dayList = dayList;
+	}
 
+	public List<Daily> getDailyList() {
+		return dailyList;
+	}
+	public void setDailyList(List<Daily> dailyList) {
+		this.dailyList = dailyList;
+	}
+
+	public List<Stuff> getStuffList() {
+		return stuffList;
+	}
+	public void setStuffList(List<Stuff> stuffList) {
+		this.stuffList = stuffList;
+	}
+
+	public List<Memo> getMemoList() {
+		return memoList;
+	}
+	public void setMemoList(List<Memo> memoList) {
+		this.memoList = memoList;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "Plan [planId=" + planId + ", planMaster=" + planMaster + ", planTitle=" + planTitle + ", planImg="
 				+ planImg + ", planType=" + planType + ", planRegDate=" + planRegDate + ", startDate=" + startDate
-				+ ", planStatus=" + planStatus + ", endDate=" + endDate + ", planTotalDays=" + planTotalDays
-				+ ", planDday=" + planDday + ", planPartyList=" + planPartyList + ", planPartySize=" + planPartySize
-				+ "]";
+				+ ", startDateString=" + startDateString + ", planStatus=" + planStatus + ", endDate=" + endDate;
+//				+ ", planTotalDays=" + planTotalDays + ", planDday=" + planDday + ", \n planPartyList=" + planPartyList
+//				+ ", planPartySize=" + planPartySize + ", \n todoList=" + todoList + ", \n dayList=" + dayList
+//				+ ", \n dailyList=" + dailyList + ", \n stuffList=" + stuffList + ", \n memoList=" + memoList + ", \n cityList="
+//				+ cityList + ", \n budgetOverviewList=" + budgetOverviewList + "]";
 	}
 	
 

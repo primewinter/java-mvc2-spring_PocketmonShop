@@ -18,7 +18,7 @@
 		   ㅇ Spring 과 연동시 사용하는 핵심 SqlSession 구현체
 		   ㅇ Spring 에서 제공한는 Transaction 처리에 구조화된 SqlSession 구현체	 -->
 	<bean		id="sqlSessionTemplate"		
-					class="org.mybatis.spring.SqlSessionTemplate" >		
+					class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache" >		
 		<constructor-arg ref="sqlSessionFactoryBean"/>
 	</bean>
 

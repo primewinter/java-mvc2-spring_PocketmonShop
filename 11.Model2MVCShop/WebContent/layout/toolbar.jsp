@@ -134,6 +134,7 @@
 				    <script type="text/javascript">
 				        var pushAddr = "ws://192.168.0.82:8080/websocket/${user.userId}";
 				        var webSocket = new WebSocket(pushAddr);
+				        var userId = '${user.userId}';
 				        //웹 소켓이 연결되었을 때 호출되는 이벤트
 				        webSocket.onopen = function(message){
 				              console.log('[push] : connection opened.')
@@ -166,6 +167,7 @@
 				        function disconnect(){
 				            webSocket.close();
 				        }
+				        
 				    </script>
  		</div>
  		<h4>알림 내역</h4>
@@ -441,10 +443,11 @@
 		 }
 		 
 		  jQuery(document).ready(function($) {
-				
-			  getPushList(userId);
-			  getUnreadCount(userId);
-			  
+			
+			  if(userId != null && userId != '' ) {
+			  	getPushList(userId);
+			  	getUnreadCount(userId);
+			  }
 	            // hide the menu when the page load
 	            $(".footerBar-content").hide();
 
