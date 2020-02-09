@@ -96,10 +96,10 @@
         <div class="two">
 			       <div id="chat_box"></div>
 				    <input type="text" id="msg">
-				    <button id="msg_process">전송</button>
+				    <input type="button" id="msg_process" value="전송">
 				     <script>
 				     $(document).ready(function(){
-			                var chatSocket = io("http://localhost:82");
+			                var chatSocket = io("http://localhost:82/");
 			                
 			                //msg에서 키를 누를때
 			                $("#msg").keydown(function(key){
@@ -113,6 +113,7 @@
 			                //msg_process를 클릭할 때
 			                $("#msg_process").click(function(){
 			                    //소켓에 send_msg라는 이벤트로 input에 #msg의 value를 담고 보내준다.
+			                     console.log("보낸 메시지 : "+$("#msg").val())
 			                     chatSocket.emit("send_msg", $("#msg").val());
 			                    //#msg에 벨류값을 비워준다.
 			                    $("#msg").val("");
@@ -120,6 +121,7 @@
 			                
 			                //소켓 서버로 부터 send_msg를 통해 이벤트를 받을 경우 
 			                chatSocket.on('send_msg', function(msg) {
+			                	console.log("받은 메시지 : "+msg);
 			                    //div 태그를 만들어 텍스트를 msg로 지정을 한뒤 #chat_box에 추가를 시켜준다.
 			                    $('<div></div>').text(msg).appendTo("#chat_box");
 			                });

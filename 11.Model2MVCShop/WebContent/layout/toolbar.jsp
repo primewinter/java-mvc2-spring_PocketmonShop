@@ -6,6 +6,7 @@
 
 
 <!-- ToolBar Start /////////////////////////////////////-->
+
 <nav class="navbar navbar-default navbar-fixed-top" style="background-color: #4E1EB4">
 	
 	<div class="container-fluid">
@@ -124,6 +125,9 @@
 </nav>
 		<!-- ToolBar End /////////////////////////////////////-->
  	<div class="footerBar">
+ 		<div class="pushToast">
+ 		ㅋㅋㅋ<i class="far fa-trash-alt">dd</i>
+ 		</div>
  		<div class="footerBar-content">
  			 
 				    <!-- 결과 메시지 보여주는 창 -->
@@ -144,10 +148,29 @@
 				            	  var obj = JSON.parse(message.data);
 				            	  var pushType = obj.pushType;
 				            	  console.log("pushType :: "+pushType);
-				            	  if(pushType=='T') {
-				            		  var pushMsg = obj.pushMsg;
+				            	  if(pushType=='P') {
+				            		  var pushMsg = obj.pushMsg+" 잊지 않으셨나요?";
 				            		  console.log(pushMsg);
+				            		  console.log(obj.refId)
+				            		  /* var html = '<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">';
+				            		  html += '<div class="toast-header">';
+				            		  html += '!';
+				            		  //<img src="..." class="rounded mr-2" alt="...">
+				            		  html += '<strong class="mr-auto">Bootstrap</strong>';
+				            		  html += '<small>'+obj.pushTime+'</small>';
+				            		  html += '<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">';
+				            		  html += '<span aria-hidden="true">모지?</span>';
+				            		  html += '</button>';
+				            		  html += '</div>';
+				            		  html += '<div class="toast-body">';
+				            		  html += obj.pushMsg
+				            		  html += '</div>';
+				            		  html += '</div>';  */
+				            		  $('.pushToast').html(pushMsg);
+				            		  //$('.pushToast').html(html);
+				            		  
 				            	  } else {
+				            		
 					        	  	getPushList(userId);
 					        	  	getUnreadCount(userId);
 				            	  }
@@ -168,9 +191,18 @@
 				            webSocket.close();
 				        }
 				        
+				        function sendPush(receiverId, pushType) {
+				        	var push = new Object();
+				        	console.log("[sendPush] receiverId : "+receiverId+" || pushType : "+pushType);
+							push.receiverId = receiverId;
+							push.pushType = pushType;
+						  	webSocket.send(JSON.stringify({push}));
+							console.log("push 보냈음 ::"+JSON.stringify({push}));
+				        }
+				        
 				    </script>
  		</div>
- 		<h4>알림 내역</h4>
+ 		<h4>알림 내역</h4><i class="fas fa-bell fa-2x"></i>
  	</div>
    	
    	
@@ -277,10 +309,10 @@
 					 console.log("list.size : "+list.size);
 					 
 					 var tag = "<div class='chkPushList'>"
-					 tag += "<a href='javascript:deletePush()'>삭제</a><hr>";
+					 tag += "<a href='javascript:deletePush()'><i class=\"far fa-trash-alt\"></i></a><hr>";
 					 for(var i = 0 in list) {
 					 	tag += "<input type='checkbox' name='chk' id='"+list[i].pushId+"' value='"+list[i].pushId+"'>";
-					 	tag+= "<a href='/board/getBoard?boardNo="+list[i].refId+"'>";
+					 	tag += "<a href='/board/getBoard?boardNo="+list[i].refId+"'>";
 					 	tag += list[i].pushMsg+"</a><br>";
 					 }
 					 
@@ -447,6 +479,7 @@
 			  if(userId != null && userId != '' ) {
 			  	getPushList(userId);
 			  	getUnreadCount(userId);
+			  	
 			  }
 	            // hide the menu when the page load
 	            $(".footerBar-content").hide();

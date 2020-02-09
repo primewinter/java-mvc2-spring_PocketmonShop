@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+
 import com.model2.mvc.service.domain.City;
 import com.model2.mvc.service.domain.Day;
 
@@ -120,6 +123,12 @@ public class Util {
 		}
 	}
 	
+	
+
+	public static Object getBean(String beanName) {
+        WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+        return context.getBean(beanName);
+    }
 	
 //	Calendar calendar = Calendar.getInstance();
 //	int year = calendar.get(calendar.YEAR);

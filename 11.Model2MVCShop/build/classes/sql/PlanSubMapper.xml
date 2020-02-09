@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		
+<mapper namespace="PlanSubMapper">
+	
+	<resultMap type="daily" id="dailySelectMap">
+		<result jdbcType="VARCHAR"		column="plan_id"			property="planId"/>
+		<result jdbcType="VARCHAR"		column="daily_id"			property="dailyId"/>
+		<result jdbcType="CHAR"			column="daily_cate"			property="dailyCate"/>
+		<result jdbcType="VARCHAR"		column="daily_detail"		property="dailyDetail"/>
+		<result jdbcType="VARCHAR"		column="day_no"				property="dayNo"/>
+		<result jdbcType="VARCHAR"		column="day_time"			property="dayTime"/>
+		<result jdbcType="NUMERIC"		column="budget_amount"		property="budgetAmount"/>
+		<result jdbcType="CHAR"			column="budget_currency"	property="budgetCurrency"/>
+	</resultMap>
+	
+	<resultMap type="city" id="citySelectMap">
+		<result jdbcType="VARCHAR"		column="plan_id"			property="planId"/>
+		<result jdbcType="VARCHAR"		column="city_id"			property="cityId"/>
+		<result jdbcType="VARCHAR"		column="city_name"			property="cityName"/>
+		<result jdbcType="NUMERIC"		column="visit_order"		property="visitOrder"/>
+		<result jdbcType="NUMERIC"		column="city_duration"		property="cityDuration"/>
+		<result jdbcType="CHAR"			column="tran_type"			property="tranType"/>
+	</resultMap>
+	
+	
+	<resultMap type="stuff" id="stuffSelectMap">
+		<result jdbcType="VARCHAR"		column="plan_id"			property="planId"/>
+		<result jdbcType="VARCHAR"		column="stuff_id"			property="stuffId"/>
+		<result jdbcType="VARCHAR"		column="stuff_name"			property="stuffName"/>
+		<result jdbcType="CHAR"			column="stuff_check"		property="stuffCheck"/>
+	</resultMap>
+	
+	
+	<resultMap type="memo" id="memoSelectMap">
+		<result jdbcType="VARCHAR"		column="plan_id"			property="planId"/>
+		<result jdbcType="VARCHAR"		column="memo_id"			property="memoId"/>
+		<result jdbcType="VARCHAR"		column="memo_detail"		property="memoDetail"/>
+		<result jdbcType="TIMESTAMP"	column="memo_reg_date"		property="memoRegDate"/>
+		<result jdbcType="VARCHAR"		column="user_id"		property="memoRegUser"/>
+		<result jdbcType="VARCHAR"		column="nickname"		property="regUserNickname"/>
+	</resultMap>
+	
+	
+	
+	
+	<!-- 		Daily SQL		 -->
+	
+	<!--  resultType map..??? -->
+	<select id="getBudgetOverview"	parameterType="string"	resultMap="dailySelectMap">
+		SELECT 	SUM(b.won) budget_amount, b.daily_cate  
+		FROM 	( SELECT daily_cate, 
+						DECODE(budget_currency, 'K', budget_amount, 'E', budget_amount*1300, 'G', budget_amount*1500, budget_amount) AS won 
+					FROM daily WHERE plan_id = #{planId} ) b 
+		GROUP BY b.daily_cate
+	</select>
+	
+	<select id="getBudgetList"	parameterType="string"	resultMap="dailySelectMap">
+		SELECT 	d.daily_id, d.daily_cate, d.daily_detail, d.budget_amount, d.budget_currency 
+		FROM 	daily d 
+		WHERE 	d.plan_id = #{planId} 
+			AND d.budget_amount > 0
+	</select>
+	
+	
+	<select id="getDailyList"	parameterType="string"	resultMap="dailySelectMap">
+		SELECT 	d.daily_id, d.daily_cate, d.daily_detail, d.day_no, d.day_time, d.budget_amount, d.budget_currency 
+		FROM 	daily d 
+		WHERE 	d.plan_id = #{planId} 
+		ORDER BY 	day_no, day_time
+	</select>
+	
+	<select id="getDaily"	parameterType="string"	resultMap="dailySelectMap">
+		SELECT 	d.daily_id, d.daily_cate, d.daily_detail, d.day_no, d.day_time, d.budget_amount, d.budget_currency 
+		FROM 	daily d 
+		WHERE 	d.daily_id = #{dailyId}
+	</select>
+	
+	<insert id="addDaily"	parameterType="daily">
+		INSERT 
+		INTO 	daily ( plan_id, daily_id, daily_cate, daily_detail, day_no, day_time, budget_amount, budget_currency ) 
+		VALUES 		( #{planId}, TO_CHAR(seq_daily_daily_id.NEXTVAL), #{dailyCate}, #{dailyDetail}, #{dayNo}, #{dayTime}, #{budgetAmount}, #{budgetCurrency} )
+	</insert>
+	
+	<update id="updateDaily"	parameterType="daily">
+		UPDATE 	daily 
+		<set>
+			daily_cate = #{dailyCate}, 
+			daily_detail = #{dailyDetail}, 
+			day_no = #{dayNo}, 
+			day_time = #{dayTime}, 
+			budget_amount = #{budgetAmount}, 
+			budget_currency = #{budgetCurrency}
+		</set> 
+		WHERE daily_id = #{dailyId}
+	</update>
+	
+	
+	
+	
+	
+	<!-- 		City_route SQL		 -->
+	
+	<select id="getCityRouteList"	parameterType="string"	resultMap="citySelectMap">
+		SELECT 	cr.city_id, cr.city_name, cr.visit_order, cr.city_duration, cr.tran_type 
+		FROM 	city_route cr 
+		WHERE 	cr.plan_id = #{planId} 
+		ORDER BY 	cr.visit_order
+	</select>
+	
+	<insert id="addCityRoute"	parameterType="city">
+		INSERT 
+		INTO 	city_route ( city_id, plan_id, city_name, visit_order, city_duration, tran_type ) 
+		VALUES 		( TO_CHAR(seq_city_route_city_id.NEXTVAL), #{planId}, #{cityName}, #{visitOrder}, 1, NULL )
+	</insert>
+	
+	<delete id="deleteCityRoute"	parameterType="string">
+		DELETE 
+		FROM 	city_route 
+		WHERE 	city_id = #{cityId}
+	</delete>
+	
+	<select id="getCityRoute"	parameterType="string"	resultMap="citySelectMap">
+		SELECT 	cr.city_id, cr.city_name, cr.visit_order, cr.city_duration, cr.tran_type 
+		FROM 	city_route cr 
+		WHERE 	cr.city_id = #{cityId}
+	</select>
+	
+	<update id="updateCityDuration"	parameterType="city">
+		UPDATE 	city_route 
+		SET 	city_duration = #{cityDuration} 
+		WHERE 	city_id = #{cityId}
+	</update>
+	
+	<update id="updateTranType"	parameterType="city">
+		UPDATE 	city_route 
+		SET 	tran_type = #{tranType} 
+		WHERE 	city_id = #{cityId}
+	</update>
+	
+	
+	
+	
+	<!-- 		Stuff SQL		 -->
+	
+	<select id="getStuffList"	parameterType="string"	resultMap="stuffSelectMap">
+		SELECT 	s.stuff_id, s.stuff_name, s.stuff_check 
+		FROM 	stuff s 
+		WHERE 	s.plan_id = #{planId}
+		ORDER BY s.stuff_id
+	</select>
+	
+	<update id="checkStuff"	parameterType="stuff">
+		UPDATE 	stuff 
+		SET 	stuff_check = #{stuffCheck} 
+		WHERE 	stuff_id = #{stuffId}
+	</update>
+	
+	<insert id="addStuff"	parameterType="stuff">
+		INSERT 
+		INTO 	stuff ( plan_id, stuff_id, stuff_name, stuff_check ) 
+		VALUES 		( #{planId}, TO_CHAR(seq_stuff_stuff_id.NEXTVAL), #{stuffName}, 'F' )
+	</insert>
+	
+	<update id="updateStuffName"	parameterType="stuff">
+		UPDATE 	stuff 
+		SET 	stuff_name = #{stuffName} 
+		WHERE 	stuff_id = #{stuffId}
+	</update>
+	
+	<delete id="deleteStuff"	parameterType="string">
+		DELETE 
+		FROM 	stuff 
+		WHERE 	stuff_id = #{stuffId}
+	</delete>
+	
+	<!-- 디폴트 stuff 리스트를 추가하기 위한 SQL -->
+	<insert id="addDefaultStuffs"	parameterType="string">
+		INSERT 
+		INTO 	stuff ( plan_id, stuff_id, stuff_name, stuff_check ) 
+		VALUES 		( TO_CHAR(seq_plan_plan_id.CURRVAL), TO_CHAR(seq_stuff_stuff_id.NEXTVAL), #{stuffName}, 'F' )
+	</insert>
+	
+	
+	
+	
+	<!-- 		Memo SQL		 -->
+	<select id="getMemoList"	parameterType="string" resultMap="memoSelectMap">
+		SELECT 	m.memo_id, m.memo_detail, m.memo_reg_date, u.nickname, u.user_id 
+		FROM 	userss u, memo m 
+		WHERE 	m.memo_reg_user = u.user_id 
+			AND m.plan_id = #{planId} 
+		ORDER BY 	m.memo_reg_date DESC
+	</select>
+	
+	<insert id="addMemo"	parameterType="memo">
+		INSERT 
+		INTO 	memo ( plan_id, memo_id, memo_detail, memo_reg_date, memo_reg_user ) 
+		VALUES 		( #{planId}, TO_CHAR(seq_memo_memo_id.NEXTVAL), #{memoDetail}, SYSDATE, #{memoRegUser} )
+	</insert>
+	
+	<update id="updateMemo"	parameterType="memo">
+		UPDATE 	memo 
+		SET 	memo_detail = #{memoDetail} 
+		WHERE 	memo_id = #{memoId}
+	</update>
+	
+	<delete id="deleteMemo"	parameterType="string">
+		DELETE 
+		FROM 	memo 
+		WHERE 	memo_id = #{memoId}
+	</delete>
+
+
+</mapper>

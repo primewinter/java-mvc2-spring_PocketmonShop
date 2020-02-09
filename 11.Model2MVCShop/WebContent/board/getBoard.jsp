@@ -127,12 +127,10 @@ $(function() {
 				$("#content").val('');
 				
 				//글 작성자에게 push 하기
-				var writer = '${board.userId}';
-				var push = new Object();
-				push.receiverId = writer;
-				push.pushType = 'R';
-			  	webSocket.send(JSON.stringify({push}));
-				console.log("push 보냈음 ::"+JSON.stringify({push}));
+				var receiverId = '${board.userId}';
+				var pushType = 'R';
+				sendPush(receiverId, pushType);
+				
 			},
 			error: function(err) {
 				console.log("댓글 등록 실패");
