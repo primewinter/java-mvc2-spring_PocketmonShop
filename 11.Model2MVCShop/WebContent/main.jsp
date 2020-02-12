@@ -85,23 +85,23 @@ function fetchList(){
             // 컨트롤러에서 가져온 방명록 리스트는 result.data에 담겨오도록 했다.
             // 남은 데이터가 5개 이하일 경우 무한 스크롤 종료
             let length = result.length;
-            console.log("result.length() : "+length);
-            console.log("내용 result : "+result);
+            //console.log("result.length() : "+length);
+            //console.log("내용 result : "+result);
 
             $.each(result, function(index, vo){
-            	console.log("갖고온 vo : "+vo.prodNo+" | renderList(false) ? "+false)
+            	//console.log("갖고온 vo : "+vo.prodNo+" | renderList(false) ? "+false)
                	renderList(false, vo);
             })
         },
         error: function(request, error) {
         	console.log("에러났습니다...."+error);
-        	console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        	//console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
         }
     });
 }
 
 function renderList(mode,vo){
-   console.log("renderList 들어왔다");
+   //console.log("renderList 들어왔다");
     
     var html = ""
     	+"<div style=\"column-break-inside: avoid;width:100%;text-align:center;\">"
@@ -117,10 +117,10 @@ function renderList(mode,vo){
     ranking++;
 				
     if( mode ) {
-    	console.log("prepend ::: \n"+html+"\n\n")
+    	//console.log("prepend ::: \n"+html+"\n\n")
         $(".jumbotron").prepend(html);
     } else {
-    	console.log("append :::\n "+html+"\n\n")
+    	//console.log("append :::\n "+html+"\n\n")
         $(".jumbotron").append(html);
     }
 		

@@ -21,7 +21,8 @@
 	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap" rel="stylesheet">
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
-	
+	<!-- 채팅 node js Server	 -->
+	 <!-- <script src="http://localhost:82/socket.io/socket.io.js"></script> -->
 	<!-- Bootstrap Dropdown Hover CSS -->
    <link href="/css/animate.min.css" rel="stylesheet">
    <link href="/css/bootstrap-dropdownhover.min.css" rel="stylesheet">
@@ -127,10 +128,6 @@
 				    </script>
        	</div>
        	<div class=three>
-       		<ul class="chat_box">
-		    </ul>
-		    <input name="message">
-		    <button class="send">보내기</button>
        	</div>
     </div>
 </div>

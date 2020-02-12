@@ -17,7 +17,6 @@
 		<result property="cmtCount" 			column="cmt_count" 		jdbcType="INTEGER"/>
 		
 		<result property="title"						column="title"						jdbcType="VARCHAR"/>
-		<result property="title"						column="cmt_content"		jdbcType="VARCHAR"/>
 		
 	</resultMap>
 	
@@ -28,12 +27,43 @@
 	</insert>
 	
 	<sql id="select-pushList">
-		SELECT  p.push_id, p.push_type, p.ref_id, p.push_date, p.read, p.cmt_Count, b.title
-		FROM push p, board b
-		WHERE p.ref_id = b.board_no
-						AND receiver_id = #{receiverId} AND deleted = 'F'
+		SELECT  p.push_id, p.push_type, p.ref_id, p.push_date, p.read, p.cmt_count
+		FROM push p
+		WHERE receiver_id = #{receiverId} AND deleted = 'F'
 		ORDER BY push_date DESC
 	</sql>
+	
+	<select id="getPostTitle" parameterType="push" resultType="String">
+		SELECT b.post_title title
+		FROM push p, post b
+		WHERE p.ref_id = b.post_id
+				AND p.push_type = 'C'
+				AND p.ref_id = #{refId} 
+	</select>
+	
+	<select id="getCmtContent" parameterType="push" resultType="String">
+		SELECT c.cmt_content title
+		FROM push p, comments c
+		WHERE p.ref_id = c.parent_cmt_id
+				AND p.push_type = 'R'
+				AND p.ref_id = #{refId} 
+	</select>
+	
+	<select id="getPlanTitle" parameterType="push" resultType="String">
+		SELECT pl.plan_title title
+		FROM push p, plan pl
+		WHERE p.ref_id = pl.plan_id
+				AND p.push_type = 'I'
+				AND p.ref_id = #{refId} 
+	</select>
+	
+	<select id="getAccTitle" parameterType="push" resultType="String">
+		SELECT b.post_title title
+		FROM push p, post b
+		WHERE p.ref_id = b.post_id
+				AND p.push_type = 'A'
+				AND p.ref_id = #{refId} 
+	</select>
 	
 	<select id="getPushId" parameterType="push" resultType="String">
 		SELECT push_id

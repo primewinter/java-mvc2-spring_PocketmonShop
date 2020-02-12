@@ -72,15 +72,16 @@ public class Push {
 			return pushMsg;
 		} else {
 			if(pushType.trim().equals("R")) {
-				return  "[댓글] ["+title+"]에 댓글이 ("+cmtCount+")개 달렸습니다. "+getPushTime();
-			} else if(getPushType().trim().equals("I")) {
-				return  "[초대] "+ refId+"번 플래너에 초대되었습니다. "+getPushTime();
-			} else if(getPushType().trim().equals("A")) {
-				return  "[동행] "+ refId+"번 동행에 신청이 들어왔습니다. "+getPushTime();
-			} else if(getPushType().trim().equals("P")){
+				String brief = (title.length()>12)?title.substring(0, 12)+"...":title;
+				return  "["+brief+"]에 댓글이 ("+cmtCount+")개 달렸습니다. ";
+			} else if(pushType.trim().equals("I")) {
+				return  " "+ refId+"번 플래너에 초대되었습니다. ";
+			} else if(pushType.trim().equals("A")) {
+				return  " "+ refId+"번 동행에 신청이 들어왔습니다. ";
+			} else if(pushType.trim().equals("P")){
 				return pushMsg;
 			} else {
-				return  "[알림] "+ refId+"번 알림이 있습니다. "+getPushTime();
+				return  " "+ refId+"번 알림이 있습니다. ";
 			}
 		}
 	

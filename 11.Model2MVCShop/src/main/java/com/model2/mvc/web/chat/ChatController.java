@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,17 +14,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.model2.mvc.service.domain.Plan;
+import com.model2.mvc.service.user.UserService;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+
 @Controller
 @RequestMapping("/chat/*")
 public class ChatController {
 	
+	@Autowired
+	@Qualifier("userServiceImpl")
+	private UserService userService;
+	
 	public ChatController() {
-		System.out.println(this.getClass());
 	}
 
 	@RequestMapping(value = "getPlan", method=RequestMethod.GET)
@@ -33,6 +40,7 @@ public class ChatController {
 		model.addAttribute("plan", plan);
 		return "forward:/chat/chat.jsp";
 	}
+	
 	
 	public void connectMongoDB(String chatId) throws Exception {
 		
@@ -69,6 +77,10 @@ public class ChatController {
 		 collection.insertMany(documents);
 		
 	}
+	
+	
+	
+	
 	
 
 }

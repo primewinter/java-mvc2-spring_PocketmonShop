@@ -3,6 +3,7 @@ package com.model2.mvc.web.chat;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.websocket.OnClose;
@@ -29,6 +30,7 @@ public class WebSocket {
 	
 			private static Map<String, Session> slMap = Collections.synchronizedMap(new HashMap<>());
 		
+			
 			/* 웹 소켓이 연결되면 호출되는 이벤트
 			 * @throws IOException
 			 */
@@ -39,7 +41,7 @@ public class WebSocket {
 			}
 		
 			/**
-			 * 웹 소켓으로부터 메시지가 오면 호출되는 이벤트 :: 안 쓰일 이벤트
+			 * 웹 소켓으로부터 메시지가 오면 호출되는 이벤트
 			 * @param message
 			 * @return
 			 * @throws IOException
@@ -96,6 +98,18 @@ public class WebSocket {
 					}
 				}
 				
+			}
+			
+			public void sendChat(List<String> users, Push push) throws Exception {
+				System.out.println("UserSocket :: sendChat ");
+				for(String userId : users ) {
+					for (Map.Entry<String, Session> entry : slMap.entrySet()) {
+						if (entry.getKey().equals(userId)) {
+							String result = new ObjectMapper().writeValueAsString(push);
+							entry.getValue().getBasicRemote().sendText(result);
+						}
+					}
+				}
 			}
 
 }

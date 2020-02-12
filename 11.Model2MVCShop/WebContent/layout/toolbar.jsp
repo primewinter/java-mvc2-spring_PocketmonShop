@@ -37,20 +37,20 @@
 	                     </a>
                  </li>
 	                
-                <li>
+<!--                 <li>
                 <form class="navbar-form navbar-left" name="toolSearch" id="toolSearch">
                 	 <div class="form-group">
 			    	<input type="text" class="form-control" name="searchKeyword" placeholder="포켓몬 검색"><input type="hidden"  name="searchCondition" value="0"/>
 			    	</div>
 			    	<button type="submit" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
 		    	</form>
-               </li>
+               </li> -->
                
-               	 <li>
+               <!-- 	 <li>
 	                     <a  href="#" role="button" aria-expanded="false">
 	                         <span ><img src="/images/menu/61503ea8.png"> 오박사 연구소</span>
 	                     </a>
-                 </li>
+                 </li> -->
                  <li>
 	                     <a  href="#" role="button" aria-expanded="false">
 	                         <span ><img src="/images/menu/61503ea8.png"> 게시판</span>
@@ -76,7 +76,7 @@
 		         </li>
 		                         
 	              <!-- 구매관리 DrowDown -->
-	              <li>
+	             <!--  <li>
 	                    <a  href="#" role="button" aria-expanded="false">
 	                         <span ><img src="/images/menu/062e125c6327.png"> 포켓몬등록</span>
 	                    </a>
@@ -86,7 +86,7 @@
 	                    <a  href="#" role="button" aria-expanded="false">
 	                         <span ><img src="/images/menu/01f389ce3.png"> 주문관리</span>
 	                    </a>
-	              </li>	              
+	              </li>	             -->  
 	              
                   </c:if>
                   
@@ -126,15 +126,17 @@
 		<!-- ToolBar End /////////////////////////////////////-->
  	<div class="footerBar">
  		<div class="pushToast">
- 		ㅋㅋㅋ<i class="far fa-trash-alt">dd</i>
  		</div>
  		<div class="footerBar-content">
- 			 
 				    <!-- 결과 메시지 보여주는 창 -->
-				    <div class="pushList" style="overflow-y:auto; width:200px; height:220px;">
+				    <div class="pushBar">
+				    <div class="deletePush">
+				    내 소식 알림
+				    <a href='javascript:deletePush()'><i class="far fa-trash-alt"></i></a><hr>
+				    	<div class="pushList" style="overflow-y:auto; width:300px; height:350px;">
+				    	</div>
 				    </div>
 				    <br />
-				    
 				    <script type="text/javascript">
 				        var pushAddr = "ws://192.168.0.82:8080/websocket/${user.userId}";
 				        var webSocket = new WebSocket(pushAddr);
@@ -169,8 +171,9 @@
 				            		  $('.pushToast').html(pushMsg);
 				            		  //$('.pushToast').html(html);
 				            		  
+				            	  } else if(pushType == 'chat'){
+				            		  // 채팅목록 리로드
 				            	  } else {
-				            		
 					        	  	getPushList(userId);
 					        	  	getUnreadCount(userId);
 				            	  }
@@ -201,8 +204,79 @@
 				        }
 				        
 				    </script>
+				    </div>
+				    
+				    <div class="container accChatBar ">
+				  	  	 <div class="row">
+							    <div class="col-sm accChatList">
+							    </div>
+							    <div class="col-sm accChatRoom">
+										     <!-- 송신 메시지 작성하는 창 -->
+									        <input id="textAccMessage" type="text">
+									        <!-- 송신 버튼 -->
+									        <input onclick="sendAccMessage()" value="Send" type="button">
+									
+									        <!-- 종료 버튼 -->
+									        <input onclick="disconnectAcc()" value="Disconnect" type="button">
+										    <br />
+										    <!-- 결과 메시지 보여주는 창 -->
+										    <textarea id="messageAccArea" rows="5" cols="20"></textarea>
+										    
+										     <script type="text/javascript">
+										     var accChatAddr;
+										     var accChatSocket;
+										      function enterRoom(roomId) {
+												        accChatAddr = "ws://192.168.0.82:8080/accSocket/"+roomId+"/${user.userId}";
+												        accChatSocket = new WebSocket(accChatAddr);
+												        var messageAccArea = document.getElementById("messageAccArea");
+												        //웹 소켓이 연결되었을 때 호출되는 이벤트
+												        accChatSocket.onopen = function(message){
+												              console.log('[accChat] : connection opened.')
+												          	  //웹 소켓에서 메시지가 날라왔을 때 호출되는 이벤트
+													          accChatSocket.onmessage = function(message){
+												            	  console.log("accChat 왔다 ::: "+message.data);
+												            	  messageAccArea.value += message.data+"\n";
+												            	  //var obj = JSON.parse(message.data);
+													        };
+												            
+												        };
+										      
+												        //웹 소켓이 닫혔을 때 호출되는 이벤트
+												        accChatSocket.onclose = function(message){
+												        	messageAccArea.value += "accChat 접속이 끊어졌습니다.\n";
+												        };
+												        //웹 소켓이 에러가 났을 때 호출되는 이벤트
+												        accChatSocket.onerror = function(message){
+												        	messageAccArea.value += "accChat 에러가 발생했습니다.\n";
+												        };
+										      }
+												        
+												       /*  //Send 버튼을 누르면 실행되는 함수
+												        function sendAccMessage(){
+															var chat = new Object();
+															chat.chatRoomId = ;
+															chat.senderId = userId;
+															chat.chatContent = document.getElementById("textAccMessage").value;
+															console.log("[sendAccMessage] chatRoomId : "+chat.chatRoomId+" || senderId : "+chat.senderId+" || chatContent : "+chat.chatContent);
+												        	
+												            //messageTextArea.value += "Send to Server => "+message.value+"\n";
+												            //웹소켓으로 textMessage객체의 값을 보낸다.
+												            accChatSocket.send(JSON.stringify({chat}));
+												            //textMessage객체의 값 초기화
+												            messageAccArea.value ="";
+												        } */
+												        //웹소켓 종료
+												        function disconnectAcc(){
+												        	accChatSocket.close();
+												        }
+										        
+										    </script>
+							    	</div>
+					     </div>
+				    </div>
  		</div>
  		<h4>알림 내역</h4><i class="fas fa-bell fa-2x"></i>
+ 		<h3>동행 채팅</h3>
  	</div>
    	
    	
@@ -309,14 +383,55 @@
 					 console.log("list.size : "+list.size);
 					 
 					 var tag = "<div class='chkPushList'>"
-					 tag += "<a href='javascript:deletePush()'><i class=\"far fa-trash-alt\"></i></a><hr>";
+					 //tag += "<a href='javascript:deletePush()'><i class=\"far fa-trash-alt\"></i></a><hr>";
 					 for(var i = 0 in list) {
-					 	tag += "<input type='checkbox' name='chk' id='"+list[i].pushId+"' value='"+list[i].pushId+"'>";
-					 	tag += "<a href='/board/getBoard?boardNo="+list[i].refId+"'>";
-					 	tag += list[i].pushMsg+"</a><br>";
+						tag += "<table width=95%>"
+					 	tag += "<tr>"
+					 	tag += "<td style='margin:auto;text-align:center' width='20%'>"
+						tag += "<input type='checkbox'  class='custom-control-input' name='chk' id='"+list[i].pushId+"' value='"+list[i].pushId+"'>"; // style='display:none;'
+					 	/* tag += "<a href='/board/getBoard?boardNo="+list[i].refId+"'>";
+					 	tag += list[i].pushMsg+"</a><br>"; */
+					 	if(list[i].pushType.trim()=='R') {
+					 		tag += "<img src='/images/icon/push_reply9.png'>";
+					 		tag += "</td>"
+				 			tag += "<td style='text-align:left;'>"
+			 				tag += "<label  class='custom-control-label' for='"+list[i].pushId+"' ><font size='2' font color='black'><a href='/board/getBoard?boardNo="+list[i].refId+"'>";
+					 	} else if (list[i].pushType.trim() == 'I' ) {
+					 		tag += "<img src='/images/icon/push_invite.png'>";
+					 		//tag += "<font size='3' font color='black'><a href='/myPage' >"; // 초대 목록 리스트 링크
+					 	} else if (list[i].pushType.trim() == 'A') {
+					 		tag += "<img src='/images/icon/push_acc.png'>";
+					 		//tag += "<font size='3' font color='black'><a href='/myPage/' >" // 동행 신청 목록 리스트 링크
+					 	}
+					 		tag += list[i].pushMsg+"</font></label></td>";
+					 		tag += "<tr>";
+					 		tag += "<td></td><td>";
+					 		tag += "<label  class='custom-control-label' for='"+list[i].pushId+"'><font size='1' font color='gray'>"+list[i].pushTime+"</font></a></label>";
+					 		tag += "</td>";
+					 		tag += "</tr>";
 					 }
-					 
+					 tag += "</table>"
 					 tag += "</div>"
+					  tag += "<style>"
+					  +"label { font-weight: normal; font-color: white; }"
+						/*+ "input[type=\"checkbox\"] {"
+						 +    "display:none;"
+						 +"}"
+						 +"input[type=\"checkbox\"] + label span {"
+						     +"display: inline-block;"
+						     +"width: 24px;"
+						     +"height: 24px;"
+						     +"margin: -2px 10px 0 0;"
+						     +"vertical-align: middle;"
+						     +"background: url(checkbox.svg) left top no-repeat;"
+						     +"cursor: pointer;"
+						     +"background-size: cover;"
+						 +"}"
+						 +"input[type=\"checkbox\"]:checked + label span {"
+						     +"background:url(checkbox.svg)  -26px top no-repeat;"
+						      +"background-size: cover;"
+						 +"}"*/
+						 +"</style>";  
 					 
 					 $('.pushList').html(tag);
 					 console.log("resultPage : "+resultPage);
@@ -366,11 +481,8 @@
 					"Content-Type" : "application/json"
 				},
 				success : function(list) {
-					 console.log(list);
 					
 					var length = list.length;
-					console.log("받아온 data의 길이 : "+length);
-					console.log("currentPage : "+pushPage)
 				
 					if( length < 5 ){
 						isEnd = true;
@@ -393,9 +505,35 @@
 		 // 리스트 호출 시 작동할 function : 리스트 화면에 출력
 		 function showList(vo) {
 			 var tag = "";
+					tag += "<table width=95%>"
+				 	tag += "<tr>"
+				 	tag += "<td style='margin:auto;text-align:center' width='20%'>"
+					tag += "<input type='checkbox'  class='custom-control-input' name='chk' id='"+vo.pushId+"' value='"+vo.pushId+"'>"; // style='display:none;'
+				 	if(vo.pushType.trim()=='R') {
+				 		tag += "<img src='/images/icon/push_reply9.png'>";
+				 		tag += "</td>"
+			 			tag += "<td style='text-align:left;'>"
+		 				tag += "<label  class='custom-control-label' for='"+vo.pushId+"' ><font size='2' font color='black'><a href='/board/getBoard?boardNo="+vo.refId+"'>";
+				 	} else if (vo.pushType.trim() == 'I' ) {
+				 		tag += "<img src='/images/icon/push_invite.png'>";
+				 		//tag += "<font size='3' font color='black'><a href='/myPage' >"; // 초대 목록 리스트 링크
+				 	} else if (vo.pushType.trim() == 'A') {
+				 		tag += "<img src='/images/icon/push_acc.png'>";
+				 		//tag += "<font size='3' font color='black'><a href='/myPage/' >" // 동행 신청 목록 리스트 링크
+				 	}
+			 		tag += vo.pushMsg+"</font></label></td>";
+			 		tag += "<tr>";
+			 		tag += "<td></td><td>";
+			 		tag += "<label  class='custom-control-label' for='"+vo.pushId+"'><font size='1' font color='gray'>"+vo.pushTime+"</font></a></label>";
+			 		tag += "</td>";
+			 		tag += "</tr>";
+					tag += "</table>"
+					tag += "</div>"
+/* 			 
+			 
 			 tag += "<input type='checkbox' name='chk' id='"+vo.pushId+"' value='"+vo.pushId+"'>";
 			 tag+= "<a href='/board/getBoard?boardNo="+vo.refId+"'>";
-			 tag +=vo.pushMsg+"</a><br>";
+			 tag +=vo.pushMsg+"</a><br>"; */
 		  	 $(".chkPushList").append(tag);
 		 }
 		 
@@ -449,7 +587,7 @@
 			 $("input:checkbox[name='chk']:checked").each(function(){
 			 	arrayParam.push($(this).val());
 			 });
-			 console.log("배열!!! \n");
+			 console.log("삭제할 배열 :: \n");
 			 console.log(arrayParam);
 			 
 			  var formData = JSON.stringify(arrayParam);
@@ -474,15 +612,99 @@
 			 
 		 }
 		 
+		 //========================================================
+		function getChatList() {
+			console.log("채팅방 목록 조회");
+    		var userId = '${user.userId}';
+    		
+    		$.ajax({
+        		url : "/chat/json/getChatRoomList/"+userId ,
+				type : "GET",
+				dataType : "json",
+				headers : {
+					"Accept" : "application/json",
+					"Content-Type" : "application/json"
+				},
+				success : function(result) {
+					console.log("채팅방 조회 성공");
+					console.log(result);
+					var list = JSON.stringify({result});
+					var html = "";
+					for(var i in result) {
+						html += "<input type='button' name='roomId' value='"+result[i]._id.toString()+"' onclick='getChat("+result[i]._id.toString()+")'>"+result[i].chatRoomName + "<br/>";
+					}
+					$(".accChatList").append(html);
+				},
+				error : function(error) {
+					console.log("채팅방 조회 실패");
+					console.log(error);
+				}
+			 });
+			 
+		 }
+	
+		 var roomId;
+		 
+		 function getChat(roomNo) {
+			 console.log(roomNo +"번 방 채팅메시지 불러오기 시작")
+			 enterRoom(roomNo);
+			 roomId = roomNo;
+			 $.ajax({
+				url: "/chat/json/getChat/"+roomNo ,
+			 	type: "GET",
+			 	dataType : "json",
+				headers : {
+					"Accept" : "application/json",
+					"Content-Type" : "application/json"
+				},
+				success : function(result) {
+					console.log("getChat() 성공");
+					console.log(result);
+					var list = JSON.stringify({result});
+					var html = "";
+					for(var i in result) {
+						html += "<br/>"+result[i].senderId+" : "+result[i].chatContent +" (보낸 시간 : "+result[i].chatDate+") ";
+						//console.log( result[i].senderId+" : "+result[i].chatContent +" (보낸 시간 : "+result[i].chatDate+")");
+					}
+					
+					$("#messageAccArea").append(html);
+					
+				},
+				error: function(error) {
+					console.log("getChat() 실패")
+					console.log(error);
+				}
+			 })
+		 }
+		 
+		 //Send 버튼을 누르면 실행되는 함수
+	        function sendAccMessage(){
+				var chat = new Object();
+				chat.chatRoomId = roomId;
+				chat.senderId = userId;
+				chat.chatContent = document.getElementById("textAccMessage").value;
+				console.log("[sendAccMessage] chatRoomId : "+chat.chatRoomId+" || senderId : "+chat.senderId+" || chatContent : "+chat.chatContent);
+	        	
+	            //messageTextArea.value += "Send to Server => "+message.value+"\n";
+	            //웹소켓으로 textMessage객체의 값을 보낸다.
+	            accChatSocket.send(JSON.stringify({chat}));
+	            //textMessage객체의 값 초기화
+	            messageAccArea.value ="";
+	        }
+		 
 		  jQuery(document).ready(function($) {
-			
+			  
+			  getChatList();
+			  //getChat();
+			  
 			  if(userId != null && userId != '' ) {
 			  	getPushList(userId);
 			  	getUnreadCount(userId);
 			  	
 			  }
 	            // hide the menu when the page load
-	            $(".footerBar-content").hide();
+	            $(".pushBar").hide();
+	            $(".accChatBar").slideToggle(300);
 
 	            // when .menuBtn is clicked, do this
 	            $(".footerBar h4").click(function() {
@@ -491,9 +713,13 @@
 					setTimeout(() => getUnreadCount(userId), 50);
 					
 	                // open the menu with slide effect
-	                $(".footerBar-content").slideToggle(300);
+	                $(".pushBar").slideToggle(300);
 
 	            });
+	            
+	            $(".footerBar h3").click(function() {
+	            	$(".accChatBar").slideToggle(300);
+	            })
 
 	        });
 
@@ -523,8 +749,9 @@
         }
         
         .footerBar-content {
-        	background-color: lightpink;
+        	background-color: white;
         }
+        
         
 
 	</style>

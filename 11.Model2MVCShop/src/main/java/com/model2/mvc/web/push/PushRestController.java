@@ -75,9 +75,9 @@ public class PushRestController {
 		System.out.println("json/getPushList :: @PathVariable : "+userId);
 		Search search = new Search();
 		search.setCurrentPage(1);
-		search.setPageSize(pageSize);
+		search.setPageSize(10);
 		Map<String , Object> map = pushService.getPushList(search, userId);
-		System.out.println(" :: pushServic.getPushList(search, userId) 완료");
+		System.out.println(" :: pushService.getPushList(search, userId) 완료");
 		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
 		
 		Map<String, Object> result = new HashMap<String, Object>();
@@ -99,7 +99,8 @@ public class PushRestController {
 		if(search.getCurrentPage()==0) {
 			search.setCurrentPage(1);
 		}
-		search.setPageSize(pageSize);
+		search.setPageSize(10);
+		System.out.println("검색할 search :: "+search);
 		Map<String , Object> map = pushService.getPushList(search, userId);
 		System.out.println(" :: pushService.getPushList(search, userId) 완료");
 		

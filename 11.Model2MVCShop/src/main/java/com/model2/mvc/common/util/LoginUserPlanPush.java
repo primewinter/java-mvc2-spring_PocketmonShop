@@ -101,8 +101,8 @@ public class LoginUserPlanPush implements HttpSessionListener, HttpSessionAttrib
 							
 							Timer timer = new Timer(true); 
 							//timer.scheduleAtFixedRate(runTask, 0, 10*1000); // 10초마다 할 task 
-							timer.scheduleAtFixedRate(runTask, 0, 6*10*1000);  // 1분마다 할 task 
-							//timer.scheduleAtFixedRate(task, 0, 30*60*1000); //30분마다 할 task
+							//timer.scheduleAtFixedRate(runTask, 0, 6*10*1000);  // 1분마다 할 task 
+							timer.scheduleAtFixedRate(runTask, 0, 30*60*1000); //30분마다 할 task
 							
 					}
 					checkMap.put(userId, runTask);
