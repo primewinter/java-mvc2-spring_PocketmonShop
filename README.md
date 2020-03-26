@@ -37,6 +37,11 @@ MVC1 모델에서 총 열 한 번의 리팩토링을 거쳐 ModelAndView 전략�
 
 2. 오픈 API 를 통해 SNS로그인과 아임포트 결제를 구현하지 못하여 아쉬웠습니다. (추후 팀프로젝트를 통해 구현해볼 수 있었습니다.)
 
+3. 깃허브를 통해 형상관리를 배우는 과정에서 커밋을 제대로 숙지하지 못해 새 주소를 몇 개 생성하였습니다. 한 프로젝트 내에서 커밋과 푸시를 통해 형상관리를 올바르게 하는 방법을 배우고 싶습니다. (추후 팀프로젝트를 통해 배울 수 있었습니다.)
+https://github.com/primewinter/06PJT
+https://github.com/primewinter/06refactoring
+https://github.com/primewinter/07refactoring
+
 
 
 ## 참고
